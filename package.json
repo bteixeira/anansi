@@ -1,0 +1,53 @@
+{
+	"name": "webstrap",
+	"version": "0.1.0",
+	"description": "",
+	"main": "src/app.ts",
+	"scripts": {
+		"dev-server": "ts-node-dev --project src/server/tsconfig.json src/server/app.ts",
+		"dev-assets": "webpack --watch",
+		"build": "webpack",
+		"server": "ts-node --project src/server/tsconfig.json src/server/app.ts"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bteixeira/webstrap.git"
+	},
+	"author": "Bruno Teixeira",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/bteixeira/webstrap/issues"
+	},
+	"homepage": "https://github.com/bteixeira/webstrap#readme",
+	"dependencies": {
+		"@types/bunyan": "^1.8.5",
+		"@types/bunyan-format": "^0.2.0",
+		"@types/express": "^4.16.0",
+		"@types/jquery": "^3.3.22",
+		"@types/react": "^16.4.16",
+		"@types/react-dom": "^16.0.8",
+		"@types/sequelize": "^4.27.28",
+		"bootstrap": "^4.3.1",
+		"bunyan": "^1.8.12",
+		"bunyan-format": "^0.2.1",
+		"express": "^4.16.3",
+		"jquery": "^3.4.1",
+		"pg": "^7.5.0",
+		"react": "^16.5.2",
+		"react-dom": "^16.5.2",
+		"sass": "^1.14.1",
+		"sequelize": "^4.41.0",
+		"sequelize-cli": "^5.5.0",
+		"ts-node-dev": "^1.0.0-pre.30"
+	},
+	"devDependencies": {
+		"@types/node": "^10.11.4",
+		"awesome-typescript-loader": "^5.2.1",
+		"source-map-loader": "^0.2.4",
+		"ts-loader": "^5.2.1",
+		"ts-node": "^7.0.1",
+		"typescript": "^3.1.1",
+		"webpack": "^4.20.2",
+		"webpack-cli": "^3.1.2"
+	}
+}

@@ -1,0 +1,26 @@
+{
+	"development": {
+		"username": "webstrap",
+		"password": "webstrap",
+		"database": "webstrap_development",
+		"host": "127.0.0.1",
+		"dialect": "postgres",
+		"operatorsAliases": false
+	},
+	"test": {
+		"username": "webstrap",
+		"password": "webstrap",
+		"database": "webstrap_test",
+		"host": "127.0.0.1",
+		"dialect": "postgres",
+		"operatorsAliases": false
+	},
+	"production": {
+		"username": "webstrap",
+		"password": "webstrap",
+		"database": "webstrap_production",
+		"host": "127.0.0.1",
+		"dialect": "postgres",
+		"operatorsAliases": false
+	}
+}

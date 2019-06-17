@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"noImplicitAny": true,
+		"sourceMap": true,
+		"module": "es6",
+		"target": "es5",
+		"jsx": "react",
+		"lib": ["ES2015", "dom"],
+		"moduleResolution": "node",
+		"resolveJsonModule": true
+	},
+	"files": [
+		"src/assets/ts/index.ts"
+	]
+}
