@@ -47,7 +47,8 @@ export default class Tryout1 extends React.Component<{}, Status> {
 	}
 
 	handleClick () {
-		window.fetch(this.state.url, {mode: 'no-cors'}).then(response => {
+		this.setState({result: '...'})
+		window.fetch(`api/fetch?url=${this.state.url}`).then(response => {
 			response.text().then(text => {
 				this.setState({
 					result: text,
