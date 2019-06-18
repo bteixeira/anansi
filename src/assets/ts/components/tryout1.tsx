@@ -171,6 +171,8 @@ export default class Tryout1 extends React.Component<{}, Status> {
 				resultSelector: `Found ${len} elements`,
 			})
 
+			const newFields: {[index: string]: any} = {}
+
 			const $fixedFieldElem = $(doc).find(this.state.fixedFieldSelector)
 			const fixedFieldName = doc.evaluate(
 					this.state.fixedFieldXpath,
@@ -179,8 +181,29 @@ export default class Tryout1 extends React.Component<{}, Status> {
 					XPathResult.STRING_TYPE,
 					null,
 			).stringValue
+			newFields[this.state.fixedFieldName] = fixedFieldName
+
+			const $dynamicFieldElems = $(doc).find(this.state.dynamicFieldSelector)
+			$dynamicFieldElems.each((i, el) => {
+				const dynamicFieldName = doc.evaluate(
+						this.state.dynamicFieldNameXpath,
+						el,
+						null,
+						XPathResult.STRING_TYPE,
+						null,
+				).stringValue
+				const dynamicFieldValue = doc.evaluate(
+						this.state.dynamicFieldValueXpath,
+						el,
+						null,
+						XPathResult.STRING_TYPE,
+						null,
+				).stringValue
+				newFields[dynamicFieldName] = dynamicFieldValue
+			})
+
 			this.setState(prevState => {
-				const fields = Object.assign({}, prevState.resultFields, {[prevState.fixedFieldName]: fixedFieldName})
+				const fields = Object.assign({}, prevState.resultFields, newFields)
 				return {
 					resultFields: fields,
 				}
