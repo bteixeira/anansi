@@ -18,14 +18,24 @@ export default class Tryout1 extends React.Component<{}, Status> {
 	constructor (props: {}) {
 		super(props)
 		this.state = {
-			url: 'https://www.babepedia.com/babe/Candice_B',
-			selector: 'a',
-			fixedFieldName: 'Name',
+			// url: 'https://www.babepedia.com/babe/Candice_B',
+			// selector: 'a',
+			// fixedFieldName: 'Name',
+			// fixedFieldSelector: '#bioarea h1',
+			// fixedFieldXpath: 'text()',
+			// dynamicFieldSelector: '#bioarea ul li',
+			// dynamicFieldNameScript: `$el.find('span').text().split(':')[0]`,
+			// dynamicFieldValueScript: '$el.text().slice($el.text().indexOf(\':\') + 1).trim()',
+
+			url: 'https://www.gsmarena.com/zte_blade_a7_vita-9701.php',
+			selector: '#specs-list tr',
+			fixedFieldName: 'X',
 			fixedFieldSelector: '#bioarea h1',
 			fixedFieldXpath: 'text()',
-			dynamicFieldSelector: '#bioarea ul li',
-			dynamicFieldNameScript: `$el.find('span').text().split(':')[0]`,
-			dynamicFieldValueScript: '$el.text().slice($el.text().indexOf(\':\') + 1).trim()',
+			dynamicFieldSelector: '#specs-list tr',
+			dynamicFieldNameScript: `$el.find('.ttl').text().trim() || $el.find('th').text().trim()`,
+			dynamicFieldValueScript: '$el.find(\'.nfo\').text()',
+
 			resultUrl: ' ',
 			resultSelector: ' ',
 			resultFields: {},
@@ -183,13 +193,14 @@ export default class Tryout1 extends React.Component<{}, Status> {
 		this.setState({
 			resultUrl: '...',
 			resultSelector: '...',
-			resultFields: {},
+			resultFields: {'In Progress': '...'},
 		})
 		window.fetch(`api/fetch?url=${this.state.url}`).then(response => {
 			return response.text()
 		}).then(text => {
 			this.setState({
 				resultUrl: text,
+				resultFields: {},
 			})
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(text, 'text/html')
@@ -201,14 +212,16 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			const newFields: {[index: string]: any} = {}
 
 			const $fixedFieldElem = $(doc).find(this.state.fixedFieldSelector)
-			const fixedFieldName = doc.evaluate(
-					this.state.fixedFieldXpath,
-					$fixedFieldElem[0],
-					null,
-					XPathResult.STRING_TYPE,
-					null,
-			).stringValue
-			newFields[this.state.fixedFieldName] = fixedFieldName
+			if ($fixedFieldElem.length) {
+				const fixedFieldName = doc.evaluate(
+						this.state.fixedFieldXpath,
+						$fixedFieldElem[0],
+						null,
+						XPathResult.STRING_TYPE,
+						null,
+				).stringValue
+				newFields[this.state.fixedFieldName] = fixedFieldName
+			}
 
 			const $dynamicFieldElems = $(doc).find(this.state.dynamicFieldSelector)
 			$dynamicFieldElems.each((i, el) => {
