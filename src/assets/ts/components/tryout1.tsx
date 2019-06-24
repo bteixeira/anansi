@@ -27,7 +27,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			// dynamicFieldNameScript: `$el.find('span').text().split(':')[0]`,
 			// dynamicFieldValueScript: '$el.text().slice($el.text().indexOf(\':\') + 1).trim()',
 
-			startingUrl: 'https://www.gsmarena.com/res.php3?sSearch=blade+a7',
+			startingUrl: 'https://www.gsmarena.com/res.php3?sSearch=blade',
 			selector: '#review-body li a',
 			fixedFieldName: 'Name',
 			fixedFieldSelector: '.specs-phone-name-title',
@@ -243,11 +243,8 @@ export default class Tryout1 extends React.Component<{}, Status> {
 				resultSelector: `Found ${$links.length} elements`,
 			})
 
-			// $links.each((i, el) => {
-			// 	window.fetch()
-			// })
-			if ($links.length) {
-				const $link = $links.eq(0)
+			$links.each((i, link) => {
+				const $link = $(link)
 				const url = new URL($link.attr('href'), this.state.startingUrl).href
 				window.fetch(`api/fetch?url=${url}`).then(response => {
 					return response.text()
@@ -255,7 +252,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 					const doc = parser.parseFromString(text, 'text/html')
 					this.getFieldsFromDoc(doc)
 				})
-			}
+			})
 		}).catch(reason => {
 			this.setState({
 				resultUrl: reason,
