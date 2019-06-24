@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 interface Status {
-	url: string,
+	startingUrl: string,
 	selector: string,
 	fixedFieldName: string,
 	fixedFieldSelector: string,
@@ -11,7 +11,7 @@ interface Status {
 	dynamicFieldValueScript: string,
 	resultUrl: string,
 	resultSelector: string,
-	resultFields: object,
+	resultRecords: object[],
 }
 
 export default class Tryout1 extends React.Component<{}, Status> {
@@ -27,10 +27,10 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			// dynamicFieldNameScript: `$el.find('span').text().split(':')[0]`,
 			// dynamicFieldValueScript: '$el.text().slice($el.text().indexOf(\':\') + 1).trim()',
 
-			url: 'https://www.gsmarena.com/zte_blade_a7_vita-9701.php',
-			selector: '#specs-list tr',
-			fixedFieldName: 'X',
-			fixedFieldSelector: '#bioarea h1',
+			startingUrl: 'https://www.gsmarena.com/res.php3?sSearch=blade+a7',
+			selector: '#review-body li a',
+			fixedFieldName: 'Name',
+			fixedFieldSelector: '.specs-phone-name-title',
 			fixedFieldXpath: 'text()',
 			dynamicFieldSelector: '#specs-list tr',
 			dynamicFieldNameScript: `$el.find('.ttl').text().trim() || $el.find('th').text().trim()`,
@@ -38,7 +38,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 
 			resultUrl: ' ',
 			resultSelector: ' ',
-			resultFields: {},
+			resultRecords: [],
 		}
 	}
 
@@ -58,7 +58,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 									type="url"
 									className="form-control"
 									onChange={this.handleChangeUrl.bind(this)}
-									value={this.state.url}
+									value={this.state.startingUrl}
 							/>
 						</div>
 						<div className="col">
@@ -167,7 +167,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 					<div className="row">
 						<div className="col">
 							<pre className="border rounded p-2">
-								{JSON.stringify(this.state.resultFields, null, 4)}
+								{JSON.stringify(this.state.resultRecords, null, 4)}
 							</pre>
 						</div>
 					</div>
@@ -189,72 +189,86 @@ export default class Tryout1 extends React.Component<{}, Status> {
 		)
 	}
 
+	getFieldsFromDoc (doc: Document) {
+		const newFields: {[index: string]: any} = {}
+
+		const $fixedFieldElem = $(doc).find(this.state.fixedFieldSelector)
+		if ($fixedFieldElem.length) {
+			newFields[this.state.fixedFieldName] = doc.evaluate(
+					this.state.fixedFieldXpath,
+					$fixedFieldElem[0],
+					null,
+					XPathResult.STRING_TYPE,
+					null,
+			).stringValue
+		}
+
+		const $dynamicFieldElems = $(doc).find(this.state.dynamicFieldSelector)
+		$dynamicFieldElems.each((i, el) => {
+			const dynamicFieldName = new Function('$', '$el', `
+					return ${this.state.dynamicFieldNameScript}
+				`).call(null, $, $(el))
+
+			const dynamicFieldValue = new Function('$', '$el', `
+					return ${this.state.dynamicFieldValueScript}
+				`).call(null, $, $(el))
+
+			newFields[dynamicFieldName] = dynamicFieldValue
+		})
+
+		this.setState(prevState => (
+			{
+				resultRecords: prevState.resultRecords.concat(newFields),
+			}
+		))
+	}
+
 	handleClick () {
 		this.setState({
 			resultUrl: '...',
 			resultSelector: '...',
-			resultFields: {'In Progress': '...'},
+			resultRecords: [{'In Progress': '...'}],
 		})
-		window.fetch(`api/fetch?url=${this.state.url}`).then(response => {
+		window.fetch(`api/fetch?url=${this.state.startingUrl}`).then(response => {
 			return response.text()
 		}).then(text => {
 			this.setState({
 				resultUrl: text,
-				resultFields: {},
+				resultRecords: [],
 			})
 			const parser = new DOMParser()
 			const doc = parser.parseFromString(text, 'text/html')
-			const len = $(doc).find(this.state.selector).length
+			const $links = $(doc).find(this.state.selector)
 			this.setState({
-				resultSelector: `Found ${len} elements`,
+				resultSelector: `Found ${$links.length} elements`,
 			})
 
-			const newFields: {[index: string]: any} = {}
-
-			const $fixedFieldElem = $(doc).find(this.state.fixedFieldSelector)
-			if ($fixedFieldElem.length) {
-				const fixedFieldName = doc.evaluate(
-						this.state.fixedFieldXpath,
-						$fixedFieldElem[0],
-						null,
-						XPathResult.STRING_TYPE,
-						null,
-				).stringValue
-				newFields[this.state.fixedFieldName] = fixedFieldName
+			// $links.each((i, el) => {
+			// 	window.fetch()
+			// })
+			if ($links.length) {
+				const $link = $links.eq(0)
+				const url = new URL($link.attr('href'), this.state.startingUrl).href
+				window.fetch(`api/fetch?url=${url}`).then(response => {
+					return response.text()
+				}).then(text => {
+					const doc = parser.parseFromString(text, 'text/html')
+					this.getFieldsFromDoc(doc)
+				})
 			}
-
-			const $dynamicFieldElems = $(doc).find(this.state.dynamicFieldSelector)
-			$dynamicFieldElems.each((i, el) => {
-				const dynamicFieldName = new Function('$', '$el', `
-					return ${this.state.dynamicFieldNameScript}
-				`).call(null, $, $(el))
-
-				const dynamicFieldValue = new Function('$', '$el', `
-					return ${this.state.dynamicFieldValueScript}
-				`).call(null, $, $(el))
-
-				newFields[dynamicFieldName] = dynamicFieldValue
-			})
-
-			this.setState(prevState => {
-				const fields = Object.assign({}, prevState.resultFields, newFields)
-				return {
-					resultFields: fields,
-				}
-			})
 		}).catch(reason => {
 			this.setState({
 				resultUrl: reason,
-				resultFields: {
+				resultRecords: [{
 					error: reason.toString(),
-				}
+				}],
 			})
 		})
 	}
 
 	handleChangeUrl (event: React.ChangeEvent<HTMLInputElement>) {
 		this.setState({
-			url: event.target.value,
+			startingUrl: event.target.value,
 		})
 	}
 
