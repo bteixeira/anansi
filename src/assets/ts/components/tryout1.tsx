@@ -20,7 +20,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 		this.state = {
 			url: 'https://www.babepedia.com/babe/Candice_B',
 			selector: 'a',
-			fixedFieldName: 'name',
+			fixedFieldName: 'Name',
 			fixedFieldSelector: '#bioarea h1',
 			fixedFieldXpath: 'text()',
 			dynamicFieldSelector: '#bioarea ul li',
@@ -35,10 +35,15 @@ export default class Tryout1 extends React.Component<{}, Status> {
 	render () {
 		return (
 				<div className="container">
-					<h1>Anansi</h1>
+					<hr/>
 					<div className="row">
 						<div className="col">
-							Starting URL
+							<h3>Input</h3>
+						</div>
+					</div>
+					<div className="row">
+						<div className="col">
+							URL
 							<input
 									type="url"
 									className="form-control"
@@ -49,8 +54,17 @@ export default class Tryout1 extends React.Component<{}, Status> {
 						<div className="col">
 							Result
 							<pre className="border rounded p-2">
-								{this.state.resultUrl}
+								{
+									//this.state.resultUrl
+										"Disabled"
+								}
 							</pre>
+						</div>
+					</div>
+					<hr/>
+					<div className="row">
+						<div className="col">
+							<h3>Fetch Transforms</h3>
 						</div>
 					</div>
 					<div className="row">
@@ -68,6 +82,12 @@ export default class Tryout1 extends React.Component<{}, Status> {
 							<pre className="border rounded p-2">
 								{this.state.resultSelector}
 							</pre>
+						</div>
+					</div>
+					<hr/>
+					<div className="row">
+						<div className="col">
+							<h3>Field Mapping</h3>
 						</div>
 					</div>
 					<div className="row">
@@ -128,14 +148,20 @@ export default class Tryout1 extends React.Component<{}, Status> {
 							/>
 						</div>
 					</div>
+					<hr/>
 					<div className="row">
 						<div className="col">
-							Result
+							<h3>Output</h3>
+						</div>
+					</div>
+					<div className="row">
+						<div className="col">
 							<pre className="border rounded p-2">
-								{JSON.stringify(this.state.resultFields)}
+								{JSON.stringify(this.state.resultFields, null, 4)}
 							</pre>
 						</div>
 					</div>
+					<hr/>
 					<div className="row">
 						<div className="col">
 							<div className="btn-group">
@@ -157,6 +183,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 		this.setState({
 			resultUrl: '...',
 			resultSelector: '...',
+			resultFields: {},
 		})
 		window.fetch(`api/fetch?url=${this.state.url}`).then(response => {
 			return response.text()

@@ -1,4 +1,4 @@
-export default (content: string, title: string = 'Webstrap') =>
+export default (content: string, title: string = 'Anansi') =>
 `\
 <!DOCTYPE html>
 <html>
