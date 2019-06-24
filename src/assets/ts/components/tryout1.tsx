@@ -7,8 +7,8 @@ interface Status {
 	fixedFieldSelector: string,
 	fixedFieldXpath: string,
 	dynamicFieldSelector: string,
-	dynamicFieldNameXpath: string,
-	dynamicFieldValueXpath: string,
+	dynamicFieldNameScript: string,
+	dynamicFieldValueScript: string,
 	resultUrl: string,
 	resultSelector: string,
 	resultFields: object,
@@ -24,8 +24,8 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			fixedFieldSelector: '#bioarea h1',
 			fixedFieldXpath: 'text()',
 			dynamicFieldSelector: '#bioarea ul li',
-			dynamicFieldNameXpath: 'span/text()',
-			dynamicFieldValueXpath: 'text()',
+			dynamicFieldNameScript: `$el.find('span').text().split(':')[0]`,
+			dynamicFieldValueScript: '$el.text().slice($el.text().indexOf(\':\') + 1).trim()',
 			resultUrl: ' ',
 			resultSelector: ' ',
 			resultFields: {},
@@ -56,7 +56,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 							<pre className="border rounded p-2">
 								{
 									//this.state.resultUrl
-										"Disabled"
+									'Disabled'
 								}
 							</pre>
 						</div>
@@ -130,12 +130,12 @@ export default class Tryout1 extends React.Component<{}, Status> {
 							/>
 						</div>
 						<div className="col">
-							Dynamic Field name xpath
+							Dynamic Field name script
 							<input
 									type="text"
 									className="form-control"
-									onChange={this.handleChangeDynamicFieldNameXpath.bind(this)}
-									value={this.state.dynamicFieldNameXpath}
+									onChange={this.handleChangeDynamicFieldNameScript.bind(this)}
+									value={this.state.dynamicFieldNameScript}
 							/>
 						</div>
 						<div className="col">
@@ -143,8 +143,8 @@ export default class Tryout1 extends React.Component<{}, Status> {
 							<input
 									type="text"
 									className="form-control"
-									onChange={this.handleChangeDynamicFieldValueXpath.bind(this)}
-									value={this.state.dynamicFieldValueXpath}
+									onChange={this.handleChangeDynamicFieldValueScript.bind(this)}
+									value={this.state.dynamicFieldValueScript}
 							/>
 						</div>
 					</div>
@@ -212,20 +212,14 @@ export default class Tryout1 extends React.Component<{}, Status> {
 
 			const $dynamicFieldElems = $(doc).find(this.state.dynamicFieldSelector)
 			$dynamicFieldElems.each((i, el) => {
-				const dynamicFieldName = doc.evaluate(
-						this.state.dynamicFieldNameXpath,
-						el,
-						null,
-						XPathResult.STRING_TYPE,
-						null,
-				).stringValue
-				const dynamicFieldValue = doc.evaluate(
-						this.state.dynamicFieldValueXpath,
-						el,
-						null,
-						XPathResult.STRING_TYPE,
-						null,
-				).stringValue
+				const dynamicFieldName = new Function('$', '$el', `
+					return ${this.state.dynamicFieldNameScript}
+				`).call(null, $, $(el))
+
+				const dynamicFieldValue = new Function('$', '$el', `
+					return ${this.state.dynamicFieldValueScript}
+				`).call(null, $, $(el))
+
 				newFields[dynamicFieldName] = dynamicFieldValue
 			})
 
@@ -238,6 +232,9 @@ export default class Tryout1 extends React.Component<{}, Status> {
 		}).catch(reason => {
 			this.setState({
 				resultUrl: reason,
+				resultFields: {
+					error: reason.toString(),
+				}
 			})
 		})
 	}
@@ -278,15 +275,15 @@ export default class Tryout1 extends React.Component<{}, Status> {
 		})
 	}
 
-	handleChangeDynamicFieldNameXpath (event: React.ChangeEvent<HTMLInputElement>) {
+	handleChangeDynamicFieldNameScript (event: React.ChangeEvent<HTMLInputElement>) {
 		this.setState({
-			dynamicFieldNameXpath: event.target.value,
+			dynamicFieldNameScript: event.target.value,
 		})
 	}
 
-	handleChangeDynamicFieldValueXpath (event: React.ChangeEvent<HTMLInputElement>) {
+	handleChangeDynamicFieldValueScript (event: React.ChangeEvent<HTMLInputElement>) {
 		this.setState({
-			dynamicFieldValueXpath: event.target.value,
+			dynamicFieldValueScript: event.target.value,
 		})
 	}
 }
