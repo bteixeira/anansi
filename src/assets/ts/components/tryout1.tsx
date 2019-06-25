@@ -1,10 +1,10 @@
 import * as React from 'react'
 import TransformUtils, {DocumentWrapper} from '../transformUtils'
+import FetchSelector from './fetchSelector'
 
 interface Status {
 	startingUrl: string,
-	selector1: string,
-	selector2: string,
+	fetchSelectors: {[index: string]: string},
 	fixedFieldName: string,
 	fixedFieldSelector: string,
 	fixedFieldXpath: string,
@@ -17,6 +17,8 @@ interface Status {
 }
 
 export default class Tryout1 extends React.Component<{}, Status> {
+	private keyCount: number
+
 	constructor (props: {}) {
 		super(props)
 		this.state = {
@@ -30,8 +32,10 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			// dynamicFieldValueScript: '$el.text().slice($el.text().indexOf(\':\') + 1).trim()',
 
 			startingUrl: 'https://www.gsmarena.com/makers.php3',
-			selector1: '.st-text a[href="casio-phones-77.php"]',
-			selector2: '#review-body li a',
+			fetchSelectors: {
+				'0': '.st-text a[href="casio-phones-77.php"]',
+				'1': '#review-body li a',
+			},
 			fixedFieldName: 'Name',
 			fixedFieldSelector: '.specs-phone-name-title',
 			fixedFieldXpath: 'text()',
@@ -43,6 +47,8 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			resultSelector: ' ',
 			resultRecords: [],
 		}
+
+		this.keyCount = Object.keys(this.state.fetchSelectors).length
 	}
 
 	render () {
@@ -80,38 +86,29 @@ export default class Tryout1 extends React.Component<{}, Status> {
 							<h3>Fetch Transforms</h3>
 						</div>
 					</div>
+					{
+						Object.keys(this.state.fetchSelectors).map(key => {
+							return <FetchSelector
+									key={key}
+									value={this.state.fetchSelectors[key]}
+									onDelete={() => this.removeSelector(key)}
+									onChange={value => {
+										this.setState(prevState => ({
+											fetchSelectors: Object.assign(
+													{},
+													prevState.fetchSelectors,
+													{[key]: value},
+											)
+										}))
+									}}
+							/>
+						})
+					}
 					<div className="row">
 						<div className="col">
-							Find selector 1
-							<input
-									type="text"
-									className="form-control"
-									onChange={this.handleChangeSelector1.bind(this)}
-									value={this.state.selector1}
-							/>
-						</div>
-						<div className="col">
-							Result
-							<pre className="border rounded p-2">
-								{this.state.resultSelector}
-							</pre>
-						</div>
-					</div>
-					<div className="row">
-						<div className="col">
-							Find selector 2
-							<input
-									type="text"
-									className="form-control"
-									onChange={this.handleChangeSelector2.bind(this)}
-									value={this.state.selector2}
-							/>
-						</div>
-						<div className="col">
-							Result
-							<pre className="border rounded p-2">
-								{this.state.resultSelector}
-							</pre>
+							<button type="button" className="btn btn-primary" onClick={this.addNewFetchSelector.bind(this)}>
+								Add New
+							</button>
 						</div>
 					</div>
 					<hr/>
@@ -243,6 +240,23 @@ export default class Tryout1 extends React.Component<{}, Status> {
 		))
 	}
 
+	addNewFetchSelector () {
+		this.setState(prevState => ({
+			fetchSelectors: Object.assign({}, prevState.fetchSelectors, {[this.keyCount]: ''})
+		}))
+		this.keyCount += 1
+	}
+
+	removeSelector (key: string): void {
+		this.setState(prevState => {
+			const newSelectors = Object.assign({}, prevState.fetchSelectors)
+			delete newSelectors[key]
+			return {
+				fetchSelectors: newSelectors
+			}
+		})
+	}
+
 	handleClick () {
 		this.setState({
 			resultUrl: '...',
@@ -250,7 +264,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			resultRecords: [{'In Progress': '...'}],
 		})
 
-		TransformUtils.pipeTransforms([this.state.startingUrl], [this.state.selector1, this.state.selector2])
+		TransformUtils.pipeTransforms([this.state.startingUrl], Object.values(this.state.fetchSelectors))
 				.then((documents: DocumentWrapper[]) => {
 					this.setState({
 						resultRecords: [],
@@ -266,18 +280,6 @@ export default class Tryout1 extends React.Component<{}, Status> {
 	handleChangeUrl (event: React.ChangeEvent<HTMLInputElement>) {
 		this.setState({
 			startingUrl: event.target.value,
-		})
-	}
-
-	handleChangeSelector1 (event: React.ChangeEvent<HTMLInputElement>) {
-		this.setState({
-			selector1: event.target.value,
-		})
-	}
-
-	handleChangeSelector2 (event: React.ChangeEvent<HTMLInputElement>) {
-		this.setState({
-			selector2: event.target.value,
 		})
 	}
 
