@@ -1,6 +1,7 @@
 import * as React from 'react'
 import TransformUtils, {DocumentWrapper} from '../transformUtils'
 import FetchSelector from './fetchSelector'
+import ResultsTable from './resultsTable'
 
 interface Status {
 	startingUrl: string,
@@ -12,8 +13,7 @@ interface Status {
 	dynamicFieldNameScript: string,
 	dynamicFieldValueScript: string,
 	resultUrl: string,
-	resultSelector: string,
-	resultRecords: object[],
+	resultRecords: {[index: string]: string}[],
 }
 
 export default class Tryout1 extends React.Component<{}, Status> {
@@ -44,7 +44,6 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			dynamicFieldValueScript: '$el.find(\'.nfo\').text()',
 
 			resultUrl: ' ',
-			resultSelector: ' ',
 			resultRecords: [],
 		}
 
@@ -183,9 +182,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 					</div>
 					<div className="row">
 						<div className="col">
-							<pre className="border rounded p-2">
-								{JSON.stringify(this.state.resultRecords, null, 4)}
-							</pre>
+							<ResultsTable records={this.state.resultRecords}/>
 						</div>
 					</div>
 					<hr/>
@@ -260,7 +257,6 @@ export default class Tryout1 extends React.Component<{}, Status> {
 	handleClick () {
 		this.setState({
 			resultUrl: '...',
-			resultSelector: '...',
 			resultRecords: [{'In Progress': '...'}],
 		})
 
