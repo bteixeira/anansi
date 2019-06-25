@@ -2,6 +2,7 @@ import * as React from 'react'
 import TransformUtils, {DocumentWrapper} from '../transformUtils'
 import FetchSelector from './fetchSelector'
 import ResultsTable from './resultsTable'
+import RawTable from './rawTable'
 
 interface Status {
 	startingUrl: string,
@@ -183,6 +184,11 @@ export default class Tryout1 extends React.Component<{}, Status> {
 					<div className="row">
 						<div className="col">
 							<ResultsTable records={this.state.resultRecords}/>
+						</div>
+					</div>
+					<div className="row">
+						<div className="col">
+							<RawTable records={this.state.resultRecords}/>
 						</div>
 					</div>
 					<hr/>

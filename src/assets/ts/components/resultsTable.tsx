@@ -14,6 +14,7 @@ export default class ResultsTable extends React.Component<Props, Status> {
 
 	render () {
 		const orderedKeys: string[] = this.getFieldNames()
+		// TODO SHOULD ADD key TO BOTH LOOPS
 		return <table className="table">
 			<thead>
 				<tr>{
@@ -38,7 +39,7 @@ export default class ResultsTable extends React.Component<Props, Status> {
 		</table>
 	}
 
-	private getFieldNames (): string[] {
+	protected getFieldNames (): string[] {
 		const bigObject = Object.assign({}, ...this.props.records)
 		return Object.keys(bigObject)
 	}
