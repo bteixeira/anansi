@@ -1,4 +1,5 @@
 import * as React from 'react'
+import TransformUtils, {DocumentWrapper} from '../transformUtils'
 
 interface Status {
 	startingUrl: string,
@@ -229,38 +230,18 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			resultSelector: '...',
 			resultRecords: [{'In Progress': '...'}],
 		})
-		window.fetch(`api/fetch?url=${this.state.startingUrl}`).then(response => {
-			return response.text()
-		}).then(text => {
-			this.setState({
-				resultUrl: text,
-				resultRecords: [],
-			})
-			const parser = new DOMParser()
-			const doc = parser.parseFromString(text, 'text/html')
-			const $links = $(doc).find(this.state.selector)
-			this.setState({
-				resultSelector: `Found ${$links.length} elements`,
-			})
 
-			$links.each((i, link) => {
-				const $link = $(link)
-				const url = new URL($link.attr('href'), this.state.startingUrl).href
-				window.fetch(`api/fetch?url=${url}`).then(response => {
-					return response.text()
-				}).then(text => {
-					const doc = parser.parseFromString(text, 'text/html')
-					this.getFieldsFromDoc(doc)
+		TransformUtils.pipeTransforms([this.state.startingUrl], [this.state.selector])
+				.then((documents: DocumentWrapper[]) => {
+					this.setState({
+						resultRecords: [],
+					})
+					documents.forEach(document => {
+						const parser = new DOMParser()
+						const doc = parser.parseFromString(document.body, 'text/html')
+						this.getFieldsFromDoc(doc)
+					})
 				})
-			})
-		}).catch(reason => {
-			this.setState({
-				resultUrl: reason,
-				resultRecords: [{
-					error: reason.toString(),
-				}],
-			})
-		})
 	}
 
 	handleChangeUrl (event: React.ChangeEvent<HTMLInputElement>) {
