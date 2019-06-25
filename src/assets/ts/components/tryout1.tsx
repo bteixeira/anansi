@@ -3,7 +3,8 @@ import TransformUtils, {DocumentWrapper} from '../transformUtils'
 
 interface Status {
 	startingUrl: string,
-	selector: string,
+	selector1: string,
+	selector2: string,
 	fixedFieldName: string,
 	fixedFieldSelector: string,
 	fixedFieldXpath: string,
@@ -28,8 +29,9 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			// dynamicFieldNameScript: `$el.find('span').text().split(':')[0]`,
 			// dynamicFieldValueScript: '$el.text().slice($el.text().indexOf(\':\') + 1).trim()',
 
-			startingUrl: 'https://www.gsmarena.com/res.php3?sSearch=blade',
-			selector: '#review-body li a',
+			startingUrl: 'https://www.gsmarena.com/makers.php3',
+			selector1: '.st-text a[href="casio-phones-77.php"]',
+			selector2: '#review-body li a',
 			fixedFieldName: 'Name',
 			fixedFieldSelector: '.specs-phone-name-title',
 			fixedFieldXpath: 'text()',
@@ -80,12 +82,29 @@ export default class Tryout1 extends React.Component<{}, Status> {
 					</div>
 					<div className="row">
 						<div className="col">
-							Find selector
+							Find selector 1
 							<input
 									type="text"
 									className="form-control"
-									onChange={this.handleChangeSelector.bind(this)}
-									value={this.state.selector}
+									onChange={this.handleChangeSelector1.bind(this)}
+									value={this.state.selector1}
+							/>
+						</div>
+						<div className="col">
+							Result
+							<pre className="border rounded p-2">
+								{this.state.resultSelector}
+							</pre>
+						</div>
+					</div>
+					<div className="row">
+						<div className="col">
+							Find selector 2
+							<input
+									type="text"
+									className="form-control"
+									onChange={this.handleChangeSelector2.bind(this)}
+									value={this.state.selector2}
 							/>
 						</div>
 						<div className="col">
@@ -231,7 +250,7 @@ export default class Tryout1 extends React.Component<{}, Status> {
 			resultRecords: [{'In Progress': '...'}],
 		})
 
-		TransformUtils.pipeTransforms([this.state.startingUrl], [this.state.selector])
+		TransformUtils.pipeTransforms([this.state.startingUrl], [this.state.selector1, this.state.selector2])
 				.then((documents: DocumentWrapper[]) => {
 					this.setState({
 						resultRecords: [],
@@ -250,9 +269,15 @@ export default class Tryout1 extends React.Component<{}, Status> {
 		})
 	}
 
-	handleChangeSelector (event: React.ChangeEvent<HTMLInputElement>) {
+	handleChangeSelector1 (event: React.ChangeEvent<HTMLInputElement>) {
 		this.setState({
-			selector: event.target.value,
+			selector1: event.target.value,
+		})
+	}
+
+	handleChangeSelector2 (event: React.ChangeEvent<HTMLInputElement>) {
+		this.setState({
+			selector2: event.target.value,
 		})
 	}
 
