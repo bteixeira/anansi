@@ -1,12 +1,12 @@
 import {Request, Response, Router} from 'express'
 import * as glue from '../glue'
-import Tryout1 from '../../assets/ts/components/tryout1'
 import apiRouter from './apiRouter'
+import Main from '../../assets/ts/components/main'
 
 const defaultRouter = Router()
 
 defaultRouter.get('/', (request: Request, response: Response) => {
-	glue.render(response, 'tryout1', Tryout1, {})
+	glue.render(response, 'main', Main, {})
 })
 
 defaultRouter.use('/api/', apiRouter)

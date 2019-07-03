@@ -1,13 +1,13 @@
 import * as React from 'react'
+import {Dictionary} from './main'
 
-interface Status {
-}
+interface State {}
 
 interface Props {
-	records: { [index: string]: string }[],
+	records: Dictionary[],
 }
 
-export default class ResultsTable extends React.Component<Props, Status> {
+export default class ResultsTable extends React.Component<Props, State> {
 	constructor (props: Props) {
 		super(props)
 	}

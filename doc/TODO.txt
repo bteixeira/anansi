@@ -1,0 +1,8 @@
+acabou-se:
+- Estado global centralizado no componente raiz para poder serializar facilmente
+- State pode ser nested mas apenas com dados (objectos sem métodos)
+- CHATO: passar funções de update à maneira antiga. tentar mitigar demasiadas props através de truques:
+    - form inputs podem todos usar a mesma callback e distinguir operação através do name do input
+    - ter utilities para editar arrays do state
+    - Ter interfaces para entidades geridas (Project, View), usar estas interfaces e spread operator para gerar interfaces
+      de props e state e passagem de dados

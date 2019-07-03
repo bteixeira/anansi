@@ -30,7 +30,7 @@ export default class FetchSelector extends React.Component<Props, Status> {
 								type="button"
 								onClick={this.props.onDelete}
 						>
-							Remove
+							&times;
 						</button>
 					</div>
 				</div>
