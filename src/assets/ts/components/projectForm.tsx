@@ -8,6 +8,7 @@ import TransformUtils, {DocumentWrapper} from '../transformUtils'
 
 interface Props extends DataProject {
 	onUpdateProject: (fieldName: string, newValue: any) => void
+	onDeleteProject: () => void
 }
 interface State {}
 
@@ -15,6 +16,7 @@ export default class ProjectForm extends React.Component<Props, State> {
 	constructor (props: Props) {
 		super(props)
 		this.onUpdateField = this.onUpdateField.bind(this)
+		this.onClickDelete = this.onClickDelete.bind(this)
 	}
 
 	onUpdateField (ev: ChangeEvent<HTMLInputElement>) {
@@ -23,18 +25,24 @@ export default class ProjectForm extends React.Component<Props, State> {
 		this.props.onUpdateProject(fieldName, fieldValue)
 	}
 
+	onClickDelete (): void {
+		if (window.confirm('Delete this project permanently?')) {
+			this.props.onDeleteProject()
+		}
+	}
+
 	render () {
 		return (
 				<div className="container-fluid">
 					<hr/>
 					<div className="row">
 						<div className="col">
-							<h3>Project</h3>
+							<h3>Data Project</h3>
 						</div>
 					</div>
-					<div className="row">
+					<div className="form-row form-group">
 						<div className="col">
-							Name
+							<label>Name</label>
 							<input
 									type="text"
 									className="form-control"
@@ -42,6 +50,13 @@ export default class ProjectForm extends React.Component<Props, State> {
 									value={this.props.name}
 									onChange={this.onUpdateField}
 							/>
+						</div>
+					</div>
+					<div className="form-row">
+						<div className="col">
+							<button className="btn btn-danger" onClick={this.onClickDelete}>
+								Delete Project
+							</button>
 						</div>
 					</div>
 					<hr/>

@@ -56,7 +56,33 @@ export default class Main extends React.Component<Props, State> {
 				} else {
 					return project
 				}
-			})
+			}),
+		}))
+	}
+
+	removeCurrentProject (): void {
+		this.setState(prevState => ({
+			projects: prevState.projects.filter((project, i) => (i !== this.state.selectedProjectIndex)),
+			selectedProjectIndex: (prevState.selectedProjectIndex - 1),
+		}))
+	}
+
+	addNewProject (): void {
+		this.setState(prevState => ({
+			projects: prevState.projects.concat({
+				name: 'New Project',
+				startingUrl: '',
+				fetchSelectors: [],
+				fixedFieldName: '',
+				fixedFieldSelector: '',
+				fixedFieldXpath: '',
+				dynamicFieldSelector: '',
+				dynamicFieldNameScript: '',
+				dynamicFieldValueScript: '',
+				resultUrl: '',
+				resultRecords: [],
+			}),
+			selectedProjectIndex: prevState.projects.length,
 		}))
 	}
 
@@ -65,7 +91,11 @@ export default class Main extends React.Component<Props, State> {
 			return null
 		}
 		const serialized = window.localStorage.getItem('state')
-		return JSON.parse(serialized)
+		const state: State = JSON.parse(serialized)
+		if (state.selectedProjectIndex >= state.projects.length) {
+			state.selectedProjectIndex = state.projects.length - 1
+		}
+		return state
 	}
 
 	static serializeState (state: State): void {
@@ -97,23 +127,7 @@ export default class Main extends React.Component<Props, State> {
 									projectNames={this.state.projects.map(p => p.name)}
 									selectedProjectIndex={this.state.selectedProjectIndex}
 									onSelectProject={newIndex => this.setState({selectedProjectIndex: newIndex})}
-									onAddNewProject={() => {
-										this.setState(prevState => ({
-											projects: prevState.projects.concat({
-												name: 'New Project',
-												startingUrl: '',
-												fetchSelectors: [],
-												fixedFieldName: '',
-												fixedFieldSelector: '',
-												fixedFieldXpath: '',
-												dynamicFieldSelector: '',
-												dynamicFieldNameScript: '',
-												dynamicFieldValueScript: '',
-												resultUrl: '',
-												resultRecords: [],
-											})
-										}))
-									}}
+									onAddNewProject={() => this.addNewProject()}
 							/>
 						</div>
 						<div className="col-8 col-md-9 col-lg-10">
@@ -122,6 +136,7 @@ export default class Main extends React.Component<Props, State> {
 									onUpdateProject={(fieldName, newValue) => {
 										this.updateCurrentProject(fieldName, newValue)
 									}}
+									onDeleteProject={() => this.removeCurrentProject()}
 							/>
 						</div>
 					</div>
