@@ -23,10 +23,12 @@ export default class ProjectsList extends React.Component<Props, State> {
 							this.props.projectNames.map((projectName, i) => (
 									<li
 										key={`${i}-${projectName}`}
+										title={projectName}
 										className={`
 										list-group-item
 										list-group-item-action
 										anansi-clickable
+										text-truncate
 										${i === this.props.selectedProjectIndex ? 'active' : ''}
 									`} onClick={() => {this.props.onSelectProject(i)}}>
 							 			{projectName}
@@ -35,7 +37,11 @@ export default class ProjectsList extends React.Component<Props, State> {
 						}
 					</ul>
 					<hr/>
-					<button type="button" className="btn btn-primary" onClick={() => this.props.onAddNewProject()}>
+					<button
+							type="button"
+							className="btn btn-primary text-truncate"
+							onClick={() => this.props.onAddNewProject()}
+					>
 						+ Project
 					</button>
 				</React.Fragment>

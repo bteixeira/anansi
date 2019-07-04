@@ -25,7 +25,7 @@ export default class ProjectForm extends React.Component<Props, State> {
 
 	render () {
 		return (
-				<div className="container">
+				<div className="container-fluid">
 					<hr/>
 					<div className="row">
 						<div className="col">
@@ -180,7 +180,7 @@ export default class ProjectForm extends React.Component<Props, State> {
 						</div>
 					</div>
 					<div className="row">
-						<div className="col">
+						<div className="col anansi-data-table-container">
 							<ResultsTable records={this.props.resultRecords}/>
 						</div>
 					</div>

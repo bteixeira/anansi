@@ -81,7 +81,7 @@ export default class Main extends React.Component<Props, State> {
 		return (
 				<div className="container-fluid">
 					<div className="row">
-						<div className="col-2">
+						<div className="col-4 col-md-3 col-lg-2">
 							<ProjectsList
 									projectNames={this.state.projects.map(p => p.name)}
 									selectedProjectIndex={this.state.selectedProjectIndex}
@@ -105,7 +105,7 @@ export default class Main extends React.Component<Props, State> {
 									}}
 							/>
 						</div>
-						<div className="col">
+						<div className="col-8 col-md-9 col-lg-10">
 							<ProjectForm
 									{...this.state.projects[this.state.selectedProjectIndex]}
 									onUpdateProject={(fieldName, newValue) => {
