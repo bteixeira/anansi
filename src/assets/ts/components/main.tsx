@@ -27,24 +27,21 @@ interface State {
 export default class Main extends React.Component<Props, State> {
 	constructor (props: Props) {
 		super(props)
-		this.state = {
+		this.state = Main.deserializeState() || {
 			selectedProjectIndex: 0,
 			projects: [{
-				name: 'GSM Arena All Casio',
-				startingUrl: 'https://www.gsmarena.com/makers.php3',
-				fetchSelectors: [
-						'.st-text a[href="casio-phones-77.php"]',
-						'#review-body li a',
-				],
-				fixedFieldName: 'Name',
-				fixedFieldSelector: '.specs-phone-name-title',
-				fixedFieldXpath: 'text()',
-				dynamicFieldSelector: '#specs-list tr',
-				dynamicFieldNameScript: `$el.find('.ttl').text().trim() || $el.find('th').text().trim()`,
-				dynamicFieldValueScript: '$el.find(\'.nfo\').text()',
+				name: 'New Project',
+				startingUrl: '',
+				fetchSelectors: [],
+				fixedFieldName: '',
+				fixedFieldSelector: '',
+				fixedFieldXpath: '',
+				dynamicFieldSelector: '',
+				dynamicFieldNameScript: ``,
+				dynamicFieldValueScript: '',
 				resultUrl: '',
 				resultRecords: [],
-			}]
+			}],
 		}
 	}
 
@@ -63,7 +60,24 @@ export default class Main extends React.Component<Props, State> {
 		}))
 	}
 
+	static deserializeState (): State {
+		if (typeof window === 'undefined') {
+			return null
+		}
+		const serialized = window.localStorage.getItem('state')
+		return JSON.parse(serialized)
+	}
+
+	static serializeState (state: State): void {
+		if (typeof window === 'undefined') {
+			return
+		}
+		const serialized = JSON.stringify(state)
+		window.localStorage.setItem('state', serialized)
+	}
+
 	render () {
+		Main.serializeState(this.state)
 		return (
 				<div className="container-fluid">
 					<div className="row">

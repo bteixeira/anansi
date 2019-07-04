@@ -21,7 +21,9 @@ export default class ProjectsList extends React.Component<Props, State> {
 					<ul className="list-group">
 						{
 							this.props.projectNames.map((projectName, i) => (
-									<li className={`
+									<li
+										key={`${i}-${projectName}`}
+										className={`
 										list-group-item
 										list-group-item-action
 										anansi-clickable

@@ -21,9 +21,18 @@ function escapeForHtml (str: string) {
 			replace(/"/g, '&quot;')
 }
 
-export function render<T> (response: Response, componentPath: string, reactClass: React.ComponentClass<T>, props: T) {
-	const element = React.createElement(reactClass, props)
-	const elementMarkup = ReactDOMServer.renderToString(element)
+export function render<T> (
+		response: Response,
+		componentPath: string,
+		reactClass: React.ComponentClass<T>,
+		props: T,
+		preRender: boolean = true,
+) {
+	let elementMarkup = ''
+	if (preRender) {
+		const element = React.createElement(reactClass, props)
+		elementMarkup = ReactDOMServer.renderToString(element)
+	}
 	const wrapperMarkup = `
 		<div
 			data-react-class="${escapeForHtml(componentPath)}"

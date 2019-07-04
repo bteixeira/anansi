@@ -80,6 +80,7 @@ export default class ProjectForm extends React.Component<Props, State> {
 					{
 						this.props.fetchSelectors.map((fetchSelector, i) =>
 							<FetchSelector
+									key={`${i}-${fetchSelector}`}
 									value={fetchSelector}
 									onDelete={() => this.props.onUpdateProject(
 											'fetchSelectors',
@@ -233,25 +234,12 @@ export default class ProjectForm extends React.Component<Props, State> {
 			newFields[dynamicFieldName] = dynamicFieldValue
 		})
 
-		// this.props.project.addResultRecord(newFields)
 		return newFields
 	}
 
 	handleClick () {
-		// this.setState({
-		// 	resultUrl: '...',
-		// 	resultRecords: [{'In Progress': '...'}],
-		// })
-
-		// const fetchSelectors = this.props.project.mapFetchSelectors(selector => selector)
-
 		TransformUtils.pipeTransforms([this.props.startingUrl], this.props.fetchSelectors)
 				.then((documents: DocumentWrapper[]) => {
-					// this.setState({
-					// 	resultRecords: [],
-					// })
-					// this.props.project.mapResultRecords(() => this.props.project.removeResultRecord(0))
-					// this.props.onUpdateProject('resultRecords', [])
 					const newRecords = documents.map(document => {
 						const parser = new DOMParser()
 						const doc = parser.parseFromString(document.body, 'text/html')

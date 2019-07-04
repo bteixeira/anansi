@@ -18,7 +18,7 @@ export default class ResultsTable extends React.Component<Props, State> {
 		return <table className="table">
 			<thead>
 				<tr>{
-					orderedKeys.map(fieldName => <th>{fieldName}</th>)
+					orderedKeys.map((fieldName, i) => <th key={`${i}-${fieldName}`}>{fieldName}</th>)
 				}</tr>
 			</thead>
 			<tbody>
