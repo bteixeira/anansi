@@ -80,6 +80,17 @@ export default class Main extends React.Component<Props, State> {
 		Main.serializeState(this.state)
 		return (
 				<div className="container-fluid">
+					<div className="row bg-dark text-white">
+						<div className="col-4 col-md-3 col-lg-2">
+							<h2>Anansi</h2>
+						</div>
+						<div className="col-8 col-md-9 col-lg-10">
+							<nav className="nav">
+								<a className="nav-link" href="#">Data Sources</a>
+								<a className="nav-link" href="#">Data Views</a>
+							</nav>
+						</div>
+					</div>
 					<div className="row">
 						<div className="col-4 col-md-3 col-lg-2">
 							<ProjectsList

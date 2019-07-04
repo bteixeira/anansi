@@ -180,7 +180,7 @@ export default class ProjectForm extends React.Component<Props, State> {
 						</div>
 					</div>
 					<div className="row">
-						<div className="col anansi-data-table-container">
+						<div className="col">
 							<ResultsTable records={this.props.resultRecords}/>
 						</div>
 					</div>

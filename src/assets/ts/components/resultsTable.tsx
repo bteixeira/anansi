@@ -15,10 +15,16 @@ export default class ResultsTable extends React.Component<Props, State> {
 	render () {
 		const orderedKeys: string[] = this.getFieldNames()
 		// TODO SHOULD ADD key TO BOTH LOOPS
-		return <table className="table">
-			<thead>
+		return <table className="table table-striped table-bordered table-sm table-responsive">
+			<thead className="thead-dark">
 				<tr>{
-					orderedKeys.map((fieldName, i) => <th key={`${i}-${fieldName}`}>{fieldName}</th>)
+					orderedKeys.map((fieldName, i) => (
+							<th
+									key={`${i}-${fieldName}`}
+									className="text-truncate"
+									title={fieldName}
+							>{fieldName}</th>
+					))
 				}</tr>
 			</thead>
 			<tbody>

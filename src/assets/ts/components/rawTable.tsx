@@ -3,7 +3,7 @@ import * as React from 'react'
 
 export default class RawTable extends ResultsTable {
 	render () {
-		return <textarea value={this.getRawText()} className="form-control" readOnly rows={10}/>
+		return <textarea value={this.getRawText()} className="form-control text-monospace anansi-raw-data" readOnly rows={10}/>
 	}
 
 	getRawText (): string {
