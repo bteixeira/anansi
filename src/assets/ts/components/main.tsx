@@ -1,12 +1,17 @@
 import * as React from 'react'
 import ProjectsList from './projectsList'
-import ProjectForm from './projectForm'
+import ProjectForm, {fetchState} from './projectForm'
 
 export type Dictionary = {[index: string]: string}
 
+export interface StartingUrl {
+	url: string
+	fetchState: fetchState
+}
+
 export interface DataProject {
 	name: string
-	startingUrl: string
+	startingUrl: StartingUrl
 	fetchSelectors: string[]
 	fixedFieldName: string
 	fixedFieldSelector: string
@@ -31,7 +36,10 @@ export default class Main extends React.Component<Props, State> {
 			selectedProjectIndex: 0,
 			projects: [{
 				name: 'New Project',
-				startingUrl: '',
+				startingUrl: {
+					url: '',
+					fetchState: fetchState.New,
+				},
 				fetchSelectors: [],
 				fixedFieldName: '',
 				fixedFieldSelector: '',
@@ -71,7 +79,10 @@ export default class Main extends React.Component<Props, State> {
 		this.setState(prevState => ({
 			projects: prevState.projects.concat({
 				name: 'New Project',
-				startingUrl: '',
+				startingUrl: {
+					url: '',
+					fetchState: fetchState.New,
+				},
 				fetchSelectors: [],
 				fixedFieldName: '',
 				fixedFieldSelector: '',

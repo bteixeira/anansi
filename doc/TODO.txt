@@ -6,3 +6,39 @@ acabou-se:
     - ter utilities para editar arrays do state
     - Ter interfaces para entidades geridas (Project, View), usar estas interfaces e spread operator para gerar interfaces
       de props e state e passagem de dados
+
+
+
+Outputs expandiveis:
+    - Cada starting URL: "XXX bytes loaded <a>show content<a/>", clicar no link abre um popup com o texto
+    -
+
+
+renren ($el, data) {
+		$el.setInner(
+				'<hr/>',
+				createComponent(
+						'<ul class="list-group"/>',
+						($ell) => {
+							$ell.setInner(
+									data.projects.mapTo((project, i) => createComponent(
+										`<li class="
+												list-group-item
+												list-group-item-action
+												anansi-clickable
+												text-truncate
+												${i === data.selectedProjectIndex ? 'active' : ''}
+										">
+											${project.value.name}
+										</li>`
+									), ($elll) => {
+										$elll.onClick(ev => {
+											const newValue = data.selectedProjectIndex.value + 1
+											data.selectedProjectIndex.set(newValue)
+										})
+									})
+							)
+						}
+				)
+		)
+	}

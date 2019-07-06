@@ -43,7 +43,7 @@ export default class TransformUtils {
 	}
 
 	public static pipeTransforms (urls: string[], selectors: string[]): Promise<DocumentWrapper[]> {
-		let promise = TransformUtils.fetchUrls(...urls)
+		let promise: Promise<DocumentWrapper[]> = TransformUtils.fetchUrls(...urls)
 
 		selectors.forEach(selector => {
 			promise = promise.then(wrappers => {

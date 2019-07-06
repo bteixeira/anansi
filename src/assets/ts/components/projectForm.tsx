@@ -12,6 +12,13 @@ interface Props extends DataProject {
 }
 interface State {}
 
+export enum fetchState {
+	New,
+	Fetching,
+	Success,
+	Error,
+}
+
 export default class ProjectForm extends React.Component<Props, State> {
 	constructor (props: Props) {
 		super(props)
@@ -31,6 +38,43 @@ export default class ProjectForm extends React.Component<Props, State> {
 		}
 	}
 
+	static renderStartingUrlState (state: fetchState) {
+		const alertClass = {
+			[fetchState.New]: 'alert-secondary',
+			[fetchState.Fetching]: 'alert-primary',
+			[fetchState.Success]: 'alert-success',
+			[fetchState.Error]: 'alert-danger',
+		}[state]
+
+		return (
+			<div className="col">
+				<div className={`alert ${alertClass} anansi-alert-sm m-0`} role="alert">
+					{(state === fetchState.New) && (
+						"No data fetched yet"
+					)}
+					{(state === fetchState.Fetching) && (
+						<React.Fragment>
+							Fetching...
+							<div className="spinner-border spinner-border-sm float-right" role="status"/>
+						</React.Fragment>
+					)}
+					{(state === fetchState.Success) && (
+						<React.Fragment>
+							Loaded 1.3KB
+							<span className="float-right">&#x2713;</span>
+						</React.Fragment>
+					)}
+					{(state === fetchState.Error) && (
+						<React.Fragment>
+							Error fetching the page (Status 503)
+						    <span className="float-right">&#x2717;</span>
+						</React.Fragment>
+					)}
+				</div>
+			</div>
+		)
+	}
+
 	render () {
 		return (
 				<div className="container-fluid">
@@ -41,8 +85,10 @@ export default class ProjectForm extends React.Component<Props, State> {
 						</div>
 					</div>
 					<div className="form-row form-group">
+						<label className="col-auto col-form-label">
+							Name
+						</label>
 						<div className="col">
-							<label>Name</label>
 							<input
 									type="text"
 									className="form-control"
@@ -51,9 +97,7 @@ export default class ProjectForm extends React.Component<Props, State> {
 									onChange={this.onUpdateField}
 							/>
 						</div>
-					</div>
-					<div className="form-row">
-						<div className="col">
+						<div className="col-auto">
 							<button className="btn btn-danger" onClick={this.onClickDelete}>
 								Delete Project
 							</button>
@@ -62,28 +106,40 @@ export default class ProjectForm extends React.Component<Props, State> {
 					<hr/>
 					<div className="row">
 						<div className="col">
-							<h3>Input</h3>
+							<h4>Starting URLs</h4>
+						</div>
+					</div>
+					<div className="form-row form-group">
+						<div className="col">
+							<input
+									type="url"
+									className="form-control form-control-sm"
+									placeholder="http://"
+									name="startingUrl"
+									value={this.props.startingUrl.url}
+									onChange={ev => {
+										this.props.onUpdateProject('startingUrl', {
+											url: ev.target.value,
+											fetchState: this.props.startingUrl.fetchState,
+										})
+									}}
+							/>
+						</div>
+						{
+							ProjectForm.renderStartingUrlState(this.props.startingUrl.fetchState)
+						}
+						<div className="col-auto">
+							<button
+								className="btn btn-danger btn-sm"
+								type="button"
+							>
+								&times;
+							</button>
 						</div>
 					</div>
 					<div className="row">
 						<div className="col">
-							URL
-							<input
-									type="url"
-									className="form-control"
-									name="startingUrl"
-									value={this.props.startingUrl}
-									onChange={this.onUpdateField}
-							/>
-						</div>
-						<div className="col">
-							Result
-							<pre className="border rounded p-2">
-								{
-									//this.state.resultUrl
-									'Disabled'
-								}
-							</pre>
+							<button className="btn btn-primary">+</button>
 						</div>
 					</div>
 					<hr/>
@@ -95,7 +151,7 @@ export default class ProjectForm extends React.Component<Props, State> {
 					{
 						this.props.fetchSelectors.map((fetchSelector, i) =>
 							<FetchSelector
-									key={`${i}-${fetchSelector}`}
+									key={`${i}`}
 									value={fetchSelector}
 									onDelete={() => this.props.onUpdateProject(
 											'fetchSelectors',
@@ -253,7 +309,7 @@ export default class ProjectForm extends React.Component<Props, State> {
 	}
 
 	handleClick () {
-		TransformUtils.pipeTransforms([this.props.startingUrl], this.props.fetchSelectors)
+		TransformUtils.pipeTransforms([this.props.startingUrl.url], this.props.fetchSelectors)
 				.then((documents: DocumentWrapper[]) => {
 					const newRecords = documents.map(document => {
 						const parser = new DOMParser()
