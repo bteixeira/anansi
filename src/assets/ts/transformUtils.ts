@@ -10,11 +10,7 @@ export default class TransformUtils {
 	 */
 	public static fetchUrls (...urls: string[]): Promise<DocumentWrapper[]> {
 		const promises: Promise<DocumentWrapper>[] = urls.map(url =>
-			new Promise((resolve, reject) => {
-				this.fetchDocument(url).then(text => {
-					resolve({url: url, body: text})
-				}).catch(reject)
-			})
+			this.fetchDocument(url)
 		)
 
 		return Promise.all(promises)
@@ -42,8 +38,8 @@ export default class TransformUtils {
 		return TransformUtils.fetchUrls(...links)
 	}
 
-	public static pipeTransforms (urls: string[], selectors: string[]): Promise<DocumentWrapper[]> {
-		let promise: Promise<DocumentWrapper[]> = TransformUtils.fetchUrls(...urls)
+	public static pipeTransforms (documents: DocumentWrapper[], selectors: string[]): Promise<DocumentWrapper[]> {
+		let promise: Promise<DocumentWrapper[]> = Promise.resolve(documents)
 
 		selectors.forEach(selector => {
 			promise = promise.then(wrappers => {
@@ -54,7 +50,9 @@ export default class TransformUtils {
 		return promise
 	}
 
-	public static fetchDocument (url: string): Promise<string> {
-		return window.fetch(`api/fetch?url=${url}`).then(response => response.text())
+	public static fetchDocument (url: string): Promise<DocumentWrapper> {
+		return window.fetch(`api/fetch?url=${url}`).then(response => response.text()).then(text => {
+			return {url: url, body: text}
+		})
 	}
 }

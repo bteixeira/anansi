@@ -60,13 +60,13 @@ export default class ProjectForm extends React.Component<Props, State> {
 					)}
 					{(state === fetchState.Success) && (
 						<React.Fragment>
-							Loaded 1.3KB
+							Loaded
 							<span className="float-right">&#x2713;</span>
 						</React.Fragment>
 					)}
 					{(state === fetchState.Error) && (
 						<React.Fragment>
-							Error fetching the page (Status 503)
+							Error fetching the page
 						    <span className="float-right">&#x2717;</span>
 						</React.Fragment>
 					)}
@@ -309,14 +309,36 @@ export default class ProjectForm extends React.Component<Props, State> {
 	}
 
 	handleClick () {
-		TransformUtils.pipeTransforms([this.props.startingUrl.url], this.props.fetchSelectors)
-				.then((documents: DocumentWrapper[]) => {
-					const newRecords = documents.map(document => {
-						const parser = new DOMParser()
-						const doc = parser.parseFromString(document.body, 'text/html')
-						return this.getFieldsFromDoc(doc)
+		this.props.onUpdateProject('startingUrl', {
+			url: this.props.startingUrl.url,
+			fetchState: fetchState.Fetching,
+		})
+		this.props.onUpdateProject('resultRecords', [])
+		TransformUtils
+				.fetchDocument(this.props.startingUrl.url)
+				.then((document: DocumentWrapper) => {
+					this.props.onUpdateProject('startingUrl', {
+						url: this.props.startingUrl.url,
+						fetchState: fetchState.Success,
 					})
-					this.props.onUpdateProject('resultRecords', newRecords)
+					TransformUtils.pipeTransforms([document], this.props.fetchSelectors)
+							.then((documents: DocumentWrapper[]) => {
+								const newRecords = documents.map(document => {
+									const parser = new DOMParser()
+									const doc = parser.parseFromString(document.body, 'text/html')
+									return this.getFieldsFromDoc(doc)
+								})
+								this.props.onUpdateProject('resultRecords', newRecords)
+							})
 				})
+				.catch(reason => {
+					this.props.onUpdateProject('startingUrl', {
+						url: this.props.startingUrl.url,
+						fetchState: fetchState.Error,
+					})
+				})
+
+
+
 	}
 }
