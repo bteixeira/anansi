@@ -4,6 +4,14 @@ import ProjectForm, {fetchState} from './projectForm'
 
 export type Dictionary = {[index: string]: string}
 
+export type fetchTransformSelector = {
+	selector: string
+	state: fetchState
+	totalUrls: number
+	processedUrls: number
+	generatedLinks: number
+}
+
 export interface StartingUrl {
 	url: string
 	fetchState: fetchState
@@ -12,7 +20,7 @@ export interface StartingUrl {
 export interface DataProject {
 	name: string
 	startingUrl: StartingUrl
-	fetchSelectors: string[]
+	fetchSelectors: fetchTransformSelector[]
 	fixedFieldName: string
 	fixedFieldSelector: string
 	fixedFieldXpath: string
