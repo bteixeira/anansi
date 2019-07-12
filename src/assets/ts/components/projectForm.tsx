@@ -2,10 +2,11 @@ import * as React from 'react'
 import FetchSelector from './fetchSelector'
 import ResultsTable from './resultsTable'
 import RawTable from './rawTable'
-import {DataProject, Dictionary} from './main'
+import {DataProject, Dictionary, fetchTransformSelector} from './main'
 import {ChangeEvent} from 'react'
 import TransformUtils, {DocumentWrapper} from '../pipeline/transformUtils'
-import PipelineTransform from '../pipeline/pipelineTransform'
+import PipelineFetchStep from '../pipeline/pipelineFetchStep'
+import PipelineReceiverStep from '../pipeline/pipelineReceiverStep'
 
 interface Props extends DataProject {
 	onUpdateProject: (fieldName: string, newValue: any) => void
@@ -37,6 +38,13 @@ export default class ProjectForm extends React.Component<Props, State> {
 		if (window.confirm('Delete this project permanently?')) {
 			this.props.onDeleteProject()
 		}
+	}
+
+	updateFetchSelector (i: number, updatedFields: Partial<fetchTransformSelector>): void {
+		this.props.onUpdateProject(
+				'fetchSelectors',
+				this.props.fetchSelectors.map((fs, j) => (i === j ? {...fs, ...updatedFields} : fs))
+		)
 	}
 
 	public static getAlertClassFromState (state: fetchState): string {
@@ -108,6 +116,22 @@ export default class ProjectForm extends React.Component<Props, State> {
 							</button>
 						</div>
 					</div>
+					<div className="row">
+						<div className="col">
+							<div className="btn-group">
+								<button
+										type="button"
+										className="btn btn-primary"
+										onClick={
+											// this.handleClick.bind(this)
+											this.handleWithPipes.bind(this)
+										}
+								>
+									Go
+								</button>
+							</div>
+						</div>
+					</div>
 					<hr/>
 					<div className="row">
 						<div className="col">
@@ -162,10 +186,7 @@ export default class ProjectForm extends React.Component<Props, State> {
 											'fetchSelectors',
 											this.props.fetchSelectors.filter((fs, j) => (i !== j))
 									)}
-									onChange={newValue => this.props.onUpdateProject(
-											'fetchSelectors',
-											this.props.fetchSelectors.map((fs, j) => (i === j ? {...fs, selector: newValue} : fs))
-									)}
+									onChange={newValue => this.updateFetchSelector(i, {selector: newValue})}
 							/>
 						)
 					}
@@ -278,7 +299,10 @@ export default class ProjectForm extends React.Component<Props, State> {
 								<button
 										type="button"
 										className="btn btn-primary"
-										onClick={this.handleClick.bind(this)}
+										onClick={
+											// this.handleClick.bind(this)
+											this.handleWithPipes.bind(this)
+										}
 								>
 									Go
 								</button>
@@ -289,7 +313,9 @@ export default class ProjectForm extends React.Component<Props, State> {
 		)
 	}
 
-	getFieldsFromDoc (doc: Document): Dictionary {
+	getFieldsFromDoc (document: DocumentWrapper): Dictionary {
+		const parser = new DOMParser()
+		const doc = parser.parseFromString(document.body, 'text/html')
 		const newFields: Dictionary = {}
 
 		const $fixedFieldElem = $(doc).find(this.props.fixedFieldSelector)
@@ -335,9 +361,7 @@ export default class ProjectForm extends React.Component<Props, State> {
 					TransformUtils.pipeTransforms([document], this.props.fetchSelectors.map(s => s.selector))
 							.then((documents: DocumentWrapper[]) => {
 								const newRecords = documents.map(document => {
-									const parser = new DOMParser()
-									const doc = parser.parseFromString(document.body, 'text/html')
-									return this.getFieldsFromDoc(doc)
+									return this.getFieldsFromDoc(document)
 								})
 								this.props.onUpdateProject('resultRecords', newRecords)
 							})
@@ -351,11 +375,39 @@ export default class ProjectForm extends React.Component<Props, State> {
 	}
 
 	handleWithPipes () {
+		this.props.onUpdateProject('resultRecords', [])
+		this.props.onUpdateProject('fetchSelectors', this.props.fetchSelectors.map(selector => ({
+				...selector,
+				state: fetchState.Fetching,
+				generatedLinks: 0,
+				processedUrls: 0,
+				totalUrls: 0,
+		})))
 		const pipeTransforms = this.props.fetchSelectors.map((selector, i) => {
-			const transform = new PipelineTransform(selector.selector)
-			// transform.onDone(() => {
-				// this.props.onUpdateProject()
-			// })
+			const transform = new PipelineFetchStep(selector.selector)
+			transform.onFinished(() => {
+				this.updateFetchSelector(i, {state: fetchState.Success})
+			})
+		// 	// transform.onReceived
+		// 	// transform.onProcessed
+			transform.onData(data => {
+				this.updateFetchSelector(i, {
+					generatedLinks: this.props.fetchSelectors[i].generatedLinks + 1
+				})
+			})
+			return transform
 		})
+		const me = this
+
+		const lastTransform = pipeTransforms.reduce((a, b) => a.pipe(b))
+		lastTransform.pipe(new class extends PipelineReceiverStep {
+			process (document: DocumentWrapper) {
+				const fields = me.getFieldsFromDoc(document)
+				me.props.onUpdateProject('resultRecords', me.props.resultRecords.concat(fields))
+			}
+		})
+
+		pipeTransforms[0].push(this.props.startingUrl.url)
+		pipeTransforms[0].finish()
 	}
 }

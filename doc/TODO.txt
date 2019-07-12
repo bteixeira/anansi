@@ -13,6 +13,34 @@ Outputs expandiveis:
     - Cada starting URL: "XXX bytes loaded <a>show content<a/>", clicar no link abre um popup com o texto
     -
 
+SHORTCOMINGS OF BACKBONE
+- The whole events system is not type safe since it is based on strings. Consider switching to signals
+- As seen before, there is no direct declarative mapping between a DOM element and a JS reference. JSX solves this
+  problem. Right now we're stuck with doing $.find() which is fragile since it's string-based (forgetting a dot before a
+  class name will break without warning). I'm starting to think a DSL might be the only solution. I don't know what this
+  DSL would look like but it should be as little intrusive as possible. One possibility is to hijack JSX and put react
+  to work as a rendering engine only with backbone pulling the strings. Another alternative is to start using Web
+  Components: since components are completely isolated it starts making sense to use onClick="..." directly like we did
+  in the 90s (kinda like JSX does). Yet another thing I thought about is to have this DSL be a very simple converter of
+  XML-based to JS, mimicking what JSX does but in a framework-agnostic way:
+
+    <Container class="my-container">
+        <ForEach collection={this.projects}>
+            <li class="list-item">
+                {project.getName()}
+            </li>
+        </ForEach>
+    </Container>
+
+  ...converts to something like:
+
+    new Container({"class": "my-container"},
+        new ForEach({collection: this.projects},
+            new Element('li', {"class": "list-item"}, (project) => project.getName())
+        )
+    )
+
+  There are still some things to decide on, like how to pass a local variable to a child in the case of loops
 
 renren ($el, data) {
 		$el.setInner(
