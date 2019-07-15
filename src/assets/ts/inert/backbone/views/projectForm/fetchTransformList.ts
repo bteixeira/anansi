@@ -1,46 +1,9 @@
-import {Collection, View} from 'backbone'
-import SingleValue from '../../models/shared/singleValue'
+import {View} from 'backbone'
 import FetchTransform from '../../models/fetchTransform'
+import CollectionView from '../shared/collectionView'
 
-/**
- * Usage
- *      $$list = new List(collection)
- *      $$list.setElement($element)
- *      $$list.render()
- *      ...
- *      $$list.setCollection(collection) // re-renders automatically, assumes view was rendered before and is
- *      supposed to be updated
- */
-export default class FetchTransformList extends View {
-	private childrenByModel = new Map<FetchTransform, JQuery>()
-
-	constructor (private transforms: Collection<FetchTransform>) {
-		super()
-	}
-
-	private initCollection (): void {
-		this.transforms.on('add', this.onAddItem, this)
-		this.transforms.on('remove', this.onRemoveItem, this)
-	}
-
-	private detachCollection (): void {
-		this.transforms.off('add', this.onAddItem, this)
-		this.transforms.off('remove', this.onRemoveItem, this)
-	}
-
-	private onAddItem (singleValue: FetchTransform): void {
-		const $listItem = this.renderListItem(singleValue)
-		this.childrenByModel.set(singleValue, $listItem)
-		this.$el.append($listItem)
-	}
-
-	private onRemoveItem (singleValue: FetchTransform): void {
-		const $listItem = this.childrenByModel.get(singleValue)
-		$listItem.remove()
-		this.childrenByModel.delete(singleValue)
-	}
-
-	private renderListItem (fetchTransform: FetchTransform): JQuery {
+export default class FetchTransformList extends CollectionView<FetchTransform> {
+	protected renderListItem (fetchTransform: FetchTransform): JQuery {
 		const alertClass = 'alert-primary'
 		const $listItem = $(`
 			<div class="form-row form-group">
@@ -85,24 +48,5 @@ export default class FetchTransformList extends View {
 		fetchTransform.on('change', () => $$status.render())
 
 		return $listItem
-	}
-
-	setCollection (collection: Collection<FetchTransform>): void {
-		this.transforms.forEach(singleValue => {
-			this.childrenByModel.get(singleValue).remove()
-		})
-		this.detachCollection()
-		this.transforms = collection
-		this.render()
-	}
-
-	render (): View {
-		this.transforms.forEach(singleValue => {
-			const $listItem = this.renderListItem(singleValue)
-			this.$el.append($listItem)
-			this.childrenByModel.set(singleValue, $listItem)
-		})
-		this.initCollection()
-		return this
 	}
 }
