@@ -18,7 +18,6 @@ export default class ProjectForm extends View {
 		this.project = project
 		this.$inputName.val(project.getName())
 		this.$$startingUrlList.setCollection(project.getStartingUrls())
-		this.$$startingUrlList.render()
 		this.$$fetchTransformList.setCollection(project.getFetchSelectors())
 	}
 
