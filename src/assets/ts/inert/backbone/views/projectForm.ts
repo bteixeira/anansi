@@ -1,8 +1,10 @@
 import {View} from 'backbone'
-import DataProject from '../models/dataProject'
+import DataProject, {StartingUrl} from '../models/dataProject'
+import StartingUrlList from './projectForm/startingUrlList'
 
 export default class ProjectForm extends View {
 	private $inputName: JQuery
+	private $$startingUrlList: StartingUrlList
 
 	constructor (private project: DataProject) {
 		super()
@@ -11,6 +13,8 @@ export default class ProjectForm extends View {
 	setProject (project: DataProject): void {
 		this.project = project
 		this.$inputName.val(project.getName())
+		this.$$startingUrlList.setCollection(project.getStartingUrls())
+		this.$$startingUrlList.render()
 	}
 
 	render (): View {
@@ -58,37 +62,12 @@ export default class ProjectForm extends View {
 						<h4>Starting URLs</h4>
 					</div>
 				</div>
-				<div class="form-row form-group">
-					<div class="col">
-						<input
-								type="url"
-								class="form-control form-control-sm --projectForm--inputStartingUrl"
-								placeholder="http://"
-								name="startingUrl"
-								value={this.props.startingUrl.url}
-								onChange={ev => {
-									this.props.onUpdateProject('startingUrl', {
-										url: ev.target.value,
-										fetchState: this.props.startingUrl.fetchState,
-									})
-								}}
-						/>
-					</div>
-					{
-						ProjectForm.renderStartingUrlState(this.props.startingUrl.fetchState)
-					}
-					<div class="col-auto">
-						<button
-							class="btn btn-danger btn-sm"
-							type="button"
-						>
-							&times;
-						</button>
-					</div>
+				<div class="row">
+					<div class="col --projectForm--startingUrls"></div>
 				</div>
 				<div class="row">
 					<div class="col">
-						<button class="btn btn-primary">+</button>
+						<button class="btn btn-primary --projectForm--buttonAddStartingUrl">+</button>
 					</div>
 				</div>
 				<hr/>
@@ -97,32 +76,32 @@ export default class ProjectForm extends View {
 						<h3>Fetch Transforms</h3>
 					</div>
 				</div>
-				{
-					this.props.fetchSelectors.map((fetchSelector, i) =>
-						<FetchSelector
-								selector={fetchSelector}
-								onDelete={() => this.props.onUpdateProject(
-										'fetchSelectors',
-										this.props.fetchSelectors.filter((fs, j) => (i !== j))
-								)}
-								onChange={newValue => this.updateFetchSelector(i, {selector: newValue})}
-						/>
-					)
-				}
+				<!--{-->
+					<!--this.props.fetchSelectors.map((fetchSelector, i) =>-->
+						<!--<FetchSelector-->
+								<!--selector={fetchSelector}-->
+								<!--onDelete={() => this.props.onUpdateProject(-->
+										<!--'fetchSelectors',-->
+										<!--this.props.fetchSelectors.filter((fs, j) => (i !== j))-->
+								<!--)}-->
+								<!--onChange={newValue => this.updateFetchSelector(i, {selector: newValue})}-->
+						<!--/>-->
+					<!--)-->
+				<!--}-->
 				<div class="row">
 					<div class="col">
-						<button type="button" class="btn btn-primary" onClick={() => this.props.onUpdateProject(
-								'fetchSelectors',
-								this.props.fetchSelectors.concat({
-									selector: '',
-									state: fetchState.New,
-									totalUrls: 0,
-									processedUrls: 0,
-									generatedLinks: 0,
-								}),
-						)}>
-							Add New
-						</button>
+						<!--<button type="button" class="btn btn-primary" onClick={() => this.props.onUpdateProject(-->
+								<!--'fetchSelectors',-->
+								<!--this.props.fetchSelectors.concat({-->
+									<!--selector: '',-->
+									<!--state: fetchState.New,-->
+									<!--totalUrls: 0,-->
+									<!--processedUrls: 0,-->
+									<!--generatedLinks: 0,-->
+								<!--}),-->
+						<!--)}>-->
+							<!--Add New-->
+						<!--</button>-->
 					</div>
 				</div>
 				<hr/>
@@ -240,6 +219,16 @@ export default class ProjectForm extends View {
 				this.project.destroy()
 			}
 		})
+
+		this.$$startingUrlList = new StartingUrlList(this.project.getStartingUrls())
+		this.$$startingUrlList.setElement(this.$('.--projectForm--startingUrls'))
+		this.$$startingUrlList.render()
+
+		this.$('.--projectForm--buttonAddStartingUrl').on('click', () => {
+			const startingUrl = new StartingUrl('')
+			this.project.getStartingUrls().add(startingUrl)
+		})
+
 		return this
 	}
 }
