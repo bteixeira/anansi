@@ -4,6 +4,7 @@ import {Collection} from 'backbone'
 import DataProject from './inert/backbone/models/dataProject'
 import Main from './inert/backbone/views/main'
 import SingleValue from './inert/backbone/models/shared/singleValue'
+import FetchTransform from './inert/backbone/models/fetchTransform'
 
 $(reactRemount.remountAll)
 
@@ -14,8 +15,8 @@ const proj1 = new DataProject('Proj1', {
 		new SingleValue('www.example.com'),
 	]),
 	fetchSelectors: new Collection([
-		new SingleValue('selector 1'),
-		new SingleValue('selector 2'),
+		new FetchTransform('selector 1'),
+		new FetchTransform('selector 2'),
 	])
 })
 const proj2 = new DataProject('Proj2')

@@ -1,5 +1,6 @@
 import {Collection, View} from 'backbone'
 import SingleValue from '../../models/shared/singleValue'
+import FetchTransform from '../../models/fetchTransform'
 
 /**
  * Usage
@@ -11,9 +12,9 @@ import SingleValue from '../../models/shared/singleValue'
  *      supposed to be updated
  */
 export default class FetchTransformList extends View {
-	private childrenByModel = new Map<SingleValue, JQuery>()
+	private childrenByModel = new Map<FetchTransform, JQuery>()
 
-	constructor (private transforms: Collection<SingleValue>) {
+	constructor (private transforms: Collection<FetchTransform>) {
 		super()
 	}
 
@@ -27,19 +28,19 @@ export default class FetchTransformList extends View {
 		this.transforms.off('remove', this.onRemoveItem, this)
 	}
 
-	private onAddItem (singleValue: SingleValue): void {
+	private onAddItem (singleValue: FetchTransform): void {
 		const $listItem = this.renderListItem(singleValue)
 		this.childrenByModel.set(singleValue, $listItem)
 		this.$el.append($listItem)
 	}
 
-	private onRemoveItem (singleValue: SingleValue): void {
+	private onRemoveItem (singleValue: FetchTransform): void {
 		const $listItem = this.childrenByModel.get(singleValue)
 		$listItem.remove()
 		this.childrenByModel.delete(singleValue)
 	}
 
-	private renderListItem (singleValue: SingleValue): JQuery {
+	private renderListItem (fetchTransform: FetchTransform): JQuery {
 		const alertClass = 'alert-primary'
 		const $listItem = $(`
 			<div class="form-row form-group">
@@ -48,13 +49,11 @@ export default class FetchTransformList extends View {
 							class="form-control form-control-sm"
 							type="text"
 							placeholder="Selector"
-							value="${singleValue.getValue()}"
+							value="${fetchTransform.getSelector()}"
 					/>
 				</div>
 				<div class="col">
 					<div class="alert ${alertClass} anansi-alert-sm m-0">
-						Processed {this.props.selector.processedUrls}/{this.props.selector.totalUrls} documents,
-						generated {this.props.selector.generatedLinks} link{(generatedLinks === 0 || generatedLinks > 1) ? 's' : ''}
 					</div>
 				</div>
 				<div class="col-auto">
@@ -69,16 +68,26 @@ export default class FetchTransformList extends View {
 		`)
 
 		$listItem.find('input').on('input', (ev: JQuery.ChangeEvent<HTMLInputElement>) => {
-			singleValue.setValue(ev.target.value)
+			fetchTransform.setSelector(ev.target.value)
 		})
 		$listItem.find('button').on('click', () => {
-			singleValue.destroy()
+			fetchTransform.destroy()
 		})
+
+		const $$status = new (View.extend({
+			model: fetchTransform,
+			el: $listItem.find('.alert')[0],
+			render: function () {
+				this.$el.text(fetchTransform.getState())
+			}
+		}))()
+		$$status.render()
+		fetchTransform.on('change', () => $$status.render())
 
 		return $listItem
 	}
 
-	setCollection (collection: Collection<SingleValue>): void {
+	setCollection (collection: Collection<FetchTransform>): void {
 		this.transforms.forEach(singleValue => {
 			this.childrenByModel.get(singleValue).remove()
 		})

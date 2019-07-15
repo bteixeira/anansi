@@ -3,6 +3,7 @@ import DataProject from '../models/dataProject'
 import StartingUrlList from './projectForm/startingUrlList'
 import SingleValue from '../models/shared/singleValue'
 import FetchTransformList from './projectForm/fetchTransformList'
+import FetchTransform from '../models/fetchTransform'
 
 export default class ProjectForm extends View {
 	private $inputName: JQuery
@@ -216,7 +217,7 @@ export default class ProjectForm extends View {
 		this.$$fetchTransformList.setElement(this.$('.--projectForm--fetchTransforms'))
 		this.$$fetchTransformList.render()
 		this.$('.--projectForm--buttonAddFetchTransform').on('click', () => {
-			const fetchTransform = new SingleValue('new transform')
+			const fetchTransform = new FetchTransform('')
 			this.project.getFetchSelectors().add(fetchTransform)
 		})
 

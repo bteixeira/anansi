@@ -1,10 +1,11 @@
 import {Collection, Model} from 'backbone'
 import SingleValue from './shared/singleValue'
+import FetchTransform from './fetchTransform'
 
 type DataProjectTemplate = Partial<{
 	name: string
 	startingUrls: Collection<SingleValue>
-	fetchSelectors: Collection<SingleValue>
+	fetchSelectors: Collection<FetchTransform>
 	// fixedFieldName: string
 	// fixedFieldSelector: string
 	// fixedFieldXpath: string
@@ -37,7 +38,7 @@ export default class DataProject extends Model {
 		return this.get('startingUrls')
 	}
 
-	getFetchSelectors (): Collection<SingleValue> {
+	getFetchSelectors (): Collection<FetchTransform> {
 		return this.get('fetchSelectors')
 	}
 }
