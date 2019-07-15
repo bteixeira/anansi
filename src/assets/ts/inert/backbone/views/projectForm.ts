@@ -1,10 +1,13 @@
 import {View} from 'backbone'
-import DataProject, {StartingUrl} from '../models/dataProject'
+import DataProject from '../models/dataProject'
 import StartingUrlList from './projectForm/startingUrlList'
+import SingleValue from '../models/shared/singleValue'
+import FetchTransformList from './projectForm/fetchTransformList'
 
 export default class ProjectForm extends View {
 	private $inputName: JQuery
 	private $$startingUrlList: StartingUrlList
+	private $$fetchTransformList: FetchTransformList
 
 	constructor (private project: DataProject) {
 		super()
@@ -15,6 +18,7 @@ export default class ProjectForm extends View {
 		this.$inputName.val(project.getName())
 		this.$$startingUrlList.setCollection(project.getStartingUrls())
 		this.$$startingUrlList.render()
+		this.$$fetchTransformList.setCollection(project.getFetchSelectors())
 	}
 
 	render (): View {
@@ -73,35 +77,15 @@ export default class ProjectForm extends View {
 				<hr/>
 				<div class="row">
 					<div class="col">
-						<h3>Fetch Transforms</h3>
+						<h4>Fetch Transforms</h4>
 					</div>
 				</div>
-				<!--{-->
-					<!--this.props.fetchSelectors.map((fetchSelector, i) =>-->
-						<!--<FetchSelector-->
-								<!--selector={fetchSelector}-->
-								<!--onDelete={() => this.props.onUpdateProject(-->
-										<!--'fetchSelectors',-->
-										<!--this.props.fetchSelectors.filter((fs, j) => (i !== j))-->
-								<!--)}-->
-								<!--onChange={newValue => this.updateFetchSelector(i, {selector: newValue})}-->
-						<!--/>-->
-					<!--)-->
-				<!--}-->
+				<div class="row">
+					<div class="col --projectForm--fetchTransforms"></div>
+				</div>
 				<div class="row">
 					<div class="col">
-						<!--<button type="button" class="btn btn-primary" onClick={() => this.props.onUpdateProject(-->
-								<!--'fetchSelectors',-->
-								<!--this.props.fetchSelectors.concat({-->
-									<!--selector: '',-->
-									<!--state: fetchState.New,-->
-									<!--totalUrls: 0,-->
-									<!--processedUrls: 0,-->
-									<!--generatedLinks: 0,-->
-								<!--}),-->
-						<!--)}>-->
-							<!--Add New-->
-						<!--</button>-->
+						<button class="btn btn-primary --projectForm--buttonAddFetchTransform">+</button>
 					</div>
 				</div>
 				<hr/>
@@ -223,10 +207,17 @@ export default class ProjectForm extends View {
 		this.$$startingUrlList = new StartingUrlList(this.project.getStartingUrls())
 		this.$$startingUrlList.setElement(this.$('.--projectForm--startingUrls'))
 		this.$$startingUrlList.render()
-
 		this.$('.--projectForm--buttonAddStartingUrl').on('click', () => {
-			const startingUrl = new StartingUrl('')
+			const startingUrl = new SingleValue('')
 			this.project.getStartingUrls().add(startingUrl)
+		})
+
+		this.$$fetchTransformList = new FetchTransformList(this.project.getFetchSelectors())
+		this.$$fetchTransformList.setElement(this.$('.--projectForm--fetchTransforms'))
+		this.$$fetchTransformList.render()
+		this.$('.--projectForm--buttonAddFetchTransform').on('click', () => {
+			const fetchTransform = new SingleValue('new transform')
+			this.project.getFetchSelectors().add(fetchTransform)
 		})
 
 		return this

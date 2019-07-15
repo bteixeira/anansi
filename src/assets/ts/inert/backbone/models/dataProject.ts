@@ -1,23 +1,10 @@
 import {Collection, Model} from 'backbone'
-
-export class StartingUrl extends Model {
-	constructor (url: string) {
-		super({url})
-	}
-
-	getUrl (): string {
-		return this.get('url')
-	}
-
-	setUrl (url: string): void {
-		this.set({url})
-	}
-}
+import SingleValue from './shared/singleValue'
 
 type DataProjectTemplate = Partial<{
 	name: string
-	startingUrls: Collection<StartingUrl>
-	// fetchSelectors: string[]
+	startingUrls: Collection<SingleValue>
+	fetchSelectors: Collection<SingleValue>
 	// fixedFieldName: string
 	// fixedFieldSelector: string
 	// fixedFieldXpath: string
@@ -32,7 +19,8 @@ export default class DataProject extends Model {
 	constructor (name: string, attributes: DataProjectTemplate = {}) {
 		super({
 			name,
-			startingUrls: new Collection<StartingUrl>(),
+			startingUrls: new Collection<SingleValue>(),
+			fetchSelectors: new Collection<SingleValue>(),
 			...attributes,
 		})
 	}
@@ -45,7 +33,11 @@ export default class DataProject extends Model {
 		return this.set('name', name)
 	}
 
-	getStartingUrls (): Collection<StartingUrl> {
+	getStartingUrls (): Collection<SingleValue> {
 		return this.get('startingUrls')
+	}
+
+	getFetchSelectors (): Collection<SingleValue> {
+		return this.get('fetchSelectors')
 	}
 }
