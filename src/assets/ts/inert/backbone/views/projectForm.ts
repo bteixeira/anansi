@@ -4,11 +4,14 @@ import StartingUrlList from './projectForm/startingUrlList'
 import SingleValue from '../models/shared/singleValue'
 import FetchTransformList from './projectForm/fetchTransformList'
 import FetchTransform from '../models/fetchTransform'
+import AlertView from './alertView'
+import FetchOnlyStep from '../../../pipeline/fetchOnlyStep'
 
 export default class ProjectForm extends View {
 	private $inputName: JQuery
 	private $$startingUrlList: StartingUrlList
 	private $$fetchTransformList: FetchTransformList
+	private $$alert: AlertView
 
 	constructor (private project: DataProject) {
 		super()
@@ -53,7 +56,7 @@ export default class ProjectForm extends View {
 						<div class="btn-group">
 							<button
 									type="button"
-									class="btn btn-primary --projectForm--buttonDelete"
+									class="btn btn-primary --projectForm--buttonGo"
 							>
 								Go
 							</button>
@@ -69,10 +72,13 @@ export default class ProjectForm extends View {
 				<div class="row">
 					<div class="col --projectForm--startingUrls"></div>
 				</div>
-				<div class="row">
+				<div class="row form-group">
 					<div class="col">
 						<button class="btn btn-primary --projectForm--buttonAddStartingUrl">+</button>
 					</div>
+				</div>
+				<div class="row">
+					<div class="col --projectForm--alertStartingUrl"></div>
 				</div>
 				<hr/>
 				<div class="row">
@@ -220,6 +226,32 @@ export default class ProjectForm extends View {
 			this.project.getFetchSelectors().add(fetchTransform)
 		})
 
+		this.$$alert = new AlertView('New', 'No data yet')
+		this.$$alert.setElement(this.$('.--projectForm--alertStartingUrl'))
+		this.$$alert.render()
+
+		this.$('.--projectForm--buttonGo').on('click', () => {
+			this.startPipeline()
+		})
+
 		return this
+	}
+
+	private startPipeline (): void {
+		let doneCount: number = 0
+		const makeText = () => `Fetched ${doneCount} of ${this.project.getStartingUrls().size()}`
+		this.$$alert.setState('Fetching')
+		this.$$alert.setText(makeText())
+
+		const fetcher = new FetchOnlyStep()
+		fetcher.onData(() => {
+			doneCount += 1
+			this.$$alert.setText(makeText())
+		})
+		fetcher.onFinished(() => {
+			this.$$alert.setState('Success')
+		})
+		this.project.getStartingUrls().forEach(url => fetcher.push(url.getValue()))
+		fetcher.close()
 	}
 }

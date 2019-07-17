@@ -10,9 +10,9 @@ $(reactRemount.remountAll)
 
 const proj1 = new DataProject('Proj1', {
 	startingUrls: new Collection([
-		new SingleValue('www.gsmarena.com'),
-		new SingleValue('www.mediamarkt.de'),
-		new SingleValue('www.example.com'),
+		new SingleValue('https://www.gsmarena.com'),
+		new SingleValue('https://www.mediamarkt.de'),
+		new SingleValue('http://www.example.com'),
 	]),
 	fetchSelectors: new Collection([
 		new FetchTransform('selector 1'),

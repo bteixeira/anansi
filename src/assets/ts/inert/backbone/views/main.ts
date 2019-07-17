@@ -15,12 +15,12 @@ export default class Main extends View {
 
 	render (): View {
 		this.$el.html(`
-			<div class="container-fluid">
+			<div class="container">
 				<div class="row bg-dark text-white">
-					<div class="col-4 col-md-3 col-lg-2">
+					<div class="col-3">
 						<h2>Anansi</h2>
 					</div>
-					<div class="col-8 col-md-9 col-lg-10">
+					<div class="col">
 						<nav class="nav">
 							<a class="nav-link" href="#">Data Sources</a>
 							<a class="nav-link" href="#">Data Views</a>
@@ -28,8 +28,8 @@ export default class Main extends View {
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-4 col-md-3 col-lg-2 --main--list"></div>
-					<div class="col-8 col-md-9 col-lg-10 --main--form"></div>
+					<div class="col-3 --main--list"></div>
+					<div class="col --main--form"></div>
 				</div>
 			</div>
 		`)
