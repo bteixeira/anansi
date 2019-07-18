@@ -51,8 +51,16 @@ export default class TransformUtils {
 	}
 
 	public static fetchDocument (url: string): Promise<DocumentWrapper> {
-		return window.fetch(`api/fetch?url=${url}`).then(response => response.text()).then(text => {
-			return {url: url, body: text}
-		})
+		return window
+				.fetch(`api/fetch?url=${url}`)
+				.then(response => {
+						return response.text().then(text => {
+							if (response.ok) {
+								return {url: url, body: text}
+							} else {
+								throw new Error(`Error fetching "${url}" (${response.status} ${response.statusText}): ${text}`)
+							}
+						})
+				})
 	}
 }

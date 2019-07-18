@@ -1,8 +1,12 @@
 import transformUtils from './transformUtils'
 
+type Callback = () => void
+type ErrorCallback = (error: Error) => void
+
 export default class FetchOnlyStep {
-	private dataCallbacks: (() => void)[] = []
-	private finishedCallbacks: (() => void)[] = []
+	private dataCallbacks: Callback[] = []
+	private errorCallbacks: ErrorCallback[] = []
+	private finishedCallbacks: Callback[] = []
 
 	private closing: boolean = false
 	private remaining: number = 0
@@ -15,6 +19,10 @@ export default class FetchOnlyStep {
 		transformUtils.fetchDocument(url).then(() => {
 			this.remaining -= 1
 			this.dataCallbacks.forEach(cb => cb())
+			this.checkClose()
+		}).catch((reason: Error) => {
+			this.remaining -= 1
+			this.errorCallbacks.forEach((cb: ErrorCallback) => cb(reason))
 			this.checkClose()
 		})
 	}
@@ -30,11 +38,15 @@ export default class FetchOnlyStep {
 		this.checkClose()
 	}
 
-	onData (callback): void {
+	onData (callback: Callback): void {
 		this.dataCallbacks.push(callback)
 	}
 
-	onFinished (callback): void {
+	onError (callback: ErrorCallback): void {
+		this.errorCallbacks.push(callback)
+	}
+
+	onFinished (callback: Callback): void {
 		this.finishedCallbacks.push(callback)
 	}
 }

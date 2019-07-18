@@ -51,7 +51,7 @@ if (!fs.existsSync(LOG_DIR)){
 	fs.mkdirSync(LOG_DIR);
 }
 export const logger = bunyan.createLogger({
-	name: 'webstrap', // TODO CONFIG
+	name: 'Anansi', // TODO CONFIG
 	streams: [
 		{stream: new BunyanFormat({outputMode: 'short'})},
 		{path: path.join(LOG_DIR, 'webstrap.log')},

@@ -58,7 +58,7 @@ export default class ProjectForm extends View {
 									type="button"
 									class="btn btn-primary --projectForm--buttonGo"
 							>
-								Go
+								Run Pipeline
 							</button>
 						</div>
 					</div>
@@ -239,7 +239,8 @@ export default class ProjectForm extends View {
 
 	private startPipeline (): void {
 		let doneCount: number = 0
-		const makeText = () => `Fetched ${doneCount} of ${this.project.getStartingUrls().size()}`
+		let errors : string[] = []
+		const makeText = () => `Fetched ${doneCount} of ${this.project.getStartingUrls().size()}${errors.map(err => `<br>` + err).join('')}`
 		this.$$alert.setState('Fetching')
 		this.$$alert.setText(makeText())
 
@@ -248,8 +249,16 @@ export default class ProjectForm extends View {
 			doneCount += 1
 			this.$$alert.setText(makeText())
 		})
+		fetcher.onError(error => {
+			errors.push(error.message)
+			this.$$alert.setText(makeText())
+		})
 		fetcher.onFinished(() => {
-			this.$$alert.setState('Success')
+			if (errors.length === 0) {
+				this.$$alert.setState('Success')
+			} else {
+				this.$$alert.setState('Error')
+			}
 		})
 		this.project.getStartingUrls().forEach(url => fetcher.push(url.getValue()))
 		fetcher.close()
