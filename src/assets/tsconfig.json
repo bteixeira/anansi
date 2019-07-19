@@ -3,9 +3,9 @@
 		"noImplicitAny": true,
 		"sourceMap": true,
 		"module": "es6",
-		"target": "es5",
+		"target": "esnext",
 		"jsx": "react",
-		"lib": ["es2017", "dom"],
+		"lib": ["es2017", "dom", "ES2018.Promise"],
 		"moduleResolution": "node",
 		"resolveJsonModule": true
 	},

@@ -4,7 +4,7 @@ import CollectionView from '../shared/collectionView'
 
 export default class FetchTransformList extends CollectionView<FetchTransform> {
 	protected renderListItem (fetchTransform: FetchTransform): JQuery {
-		const alertClass = 'alert-primary'
+		const alertClass = 'alert-success'
 		const $listItem = $(`
 			<div class="form-row form-group">
 				<div class="col">
@@ -15,10 +15,6 @@ export default class FetchTransformList extends CollectionView<FetchTransform> {
 							value="${fetchTransform.getSelector()}"
 					/>
 				</div>
-				<div class="col">
-					<div class="alert ${alertClass} anansi-alert-sm m-0">
-					</div>
-				</div>
 				<div class="col-auto">
 					<button
 							class="btn btn-danger btn-sm"
@@ -26,6 +22,20 @@ export default class FetchTransformList extends CollectionView<FetchTransform> {
 					>
 						&times;
 					</button>
+				</div>
+			</div>
+			<div class="form-row form-group">
+				<div class="col-10 offset-1">
+					<div class="alert ${alertClass} anansi-alert-sm m-0">
+						Processed 2 of 3 pages, generated 5 links
+					</div>
+				</div>
+			</div>
+			<div class="form-row form-group">
+				<div class="col-10 offset-1">
+					<div class="alert alert-danger anansi-alert-sm m-0">
+						Fetched 2 of 3 pages
+					</div>
 				</div>
 			</div>
 		`)
@@ -37,15 +47,15 @@ export default class FetchTransformList extends CollectionView<FetchTransform> {
 			fetchTransform.destroy()
 		})
 
-		const $$status = new (View.extend({
-			model: fetchTransform,
-			el: $listItem.find('.alert')[0],
-			render: function () {
-				this.$el.text(fetchTransform.getState())
-			}
-		}))()
-		$$status.render()
-		fetchTransform.on('change', () => $$status.render())
+		// const $$status = new (View.extend({
+		// 	model: fetchTransform,
+		// 	el: $listItem.find('.alert')[0],
+		// 	render: function () {
+		// 		this.$el.text(fetchTransform.getState())
+		// 	}
+		// }))()
+		// $$status.render()
+		// fetchTransform.on('change', () => $$status.render())
 
 		return $listItem
 	}

@@ -78,7 +78,7 @@ export default class ProjectForm extends View {
 					</div>
 				</div>
 				<div class="row">
-					<div class="col --projectForm--alertStartingUrl"></div>
+					<div class="col-10 offset-1 --projectForm--alertStartingUrl"></div>
 				</div>
 				<hr/>
 				<div class="row">
@@ -245,15 +245,15 @@ export default class ProjectForm extends View {
 		this.$$alert.setText(makeText())
 
 		const fetcher = new FetchOnlyStep()
-		fetcher.onData(() => {
+		fetcher.onData.add(() => {
 			doneCount += 1
 			this.$$alert.setText(makeText())
 		})
-		fetcher.onError(error => {
+		fetcher.onError.add(error => {
 			errors.push(error.message)
 			this.$$alert.setText(makeText())
 		})
-		fetcher.onFinished(() => {
+		fetcher.onFinished.add(() => {
 			if (errors.length === 0) {
 				this.$$alert.setState('Success')
 			} else {
