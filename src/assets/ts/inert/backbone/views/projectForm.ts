@@ -222,7 +222,7 @@ export default class ProjectForm extends View {
 		this.$$fetchTransformList.setElement(this.$('.--projectForm--fetchTransforms'))
 		this.$$fetchTransformList.render()
 		this.$('.--projectForm--buttonAddFetchTransform').on('click', () => {
-			const fetchTransform = new FetchTransform('')
+			const fetchTransform = new FetchTransform({selector: ''})
 			this.project.getFetchSelectors().add(fetchTransform)
 		})
 

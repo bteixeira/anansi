@@ -1,15 +1,15 @@
 import {Model} from 'backbone'
 
-export default class SingleValue extends Model {
-	constructor (value: any) {
+export default class SingleValue<T> extends Model {
+	constructor (value: T) {
 		super({value})
 	}
 
-	getValue (): string {
+	getValue (): T {
 		return this.get('value')
 	}
 
-	setValue (value: any): void {
+	setValue (value: T): void {
 		this.set({value})
 	}
 }

@@ -1,8 +1,8 @@
 import SingleValue from '../../models/shared/singleValue'
 import CollectionView from '../shared/collectionView'
 
-export default class StartingUrlList extends CollectionView<SingleValue> {
-	renderListItem (startingUrl: SingleValue): JQuery {
+export default class StartingUrlList extends CollectionView<SingleValue<string>> {
+	renderListItem (startingUrl: SingleValue<string>): JQuery {
 		const $el = $(`
 			<div class="form-row form-group">
 				<div class="col">

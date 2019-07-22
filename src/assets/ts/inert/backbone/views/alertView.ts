@@ -1,12 +1,12 @@
 import {View} from 'backbone'
-import {state} from '../models/fetchTransform'
+import {FetchState} from '../models/dataProject'
 
 export default class AlertView extends View {
-	constructor (private state: state, private text: string) {
+	constructor (private state: FetchState, private text: string) {
 		super()
 	}
 
-	private static getAlertClassFromState (state: state): string {
+	private static getAlertClassFromState (state: FetchState): string {
 		return {
 			'New': 'alert-secondary',
 			'Fetching': 'alert-primary',
@@ -38,7 +38,7 @@ export default class AlertView extends View {
 		return this
 	}
 
-	setState (state: state): void {
+	setState (state: FetchState): void {
 		this.state = state
 		this.render()
 	}

@@ -1,12 +1,20 @@
 import {Model} from 'backbone'
+import StepStats from './stepStats'
+import {FetchState} from './dataProject'
 
-export type state = ('New' | 'Fetching' | 'Success' | 'Error')
+type FetchTransformShape = {
+	selector: string
+	processStats: StepStats
+	fetchStats: StepStats
+}
 
 export default class FetchTransform extends Model {
-	constructor (selector: string) {
+	constructor (data: Partial<FetchTransformShape> = {}) {
 		super({
-			selector,
-			state: 'New',
+			selector: '',
+			processStats: new StepStats(),
+			fetchStats: new StepStats(),
+			...data,
 		})
 	}
 
@@ -17,10 +25,10 @@ export default class FetchTransform extends Model {
 		return this.get('selector')
 	}
 
-	setState (state: state): void {
+	setState (state: FetchState): void {
 		this.set({state})
 	}
-	getState (): state {
+	getState (): FetchState {
 		return this.get('state')
 	}
 }

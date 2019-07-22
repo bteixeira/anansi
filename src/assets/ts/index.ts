@@ -15,8 +15,8 @@ const proj1 = new DataProject('Proj1', {
 		new SingleValue('http://www.example.com'),
 	]),
 	fetchSelectors: new Collection([
-		new FetchTransform('selector 1'),
-		new FetchTransform('selector 2'),
+		new FetchTransform({selector: 'selector 1'}),
+		new FetchTransform({selector: 'selector 2'}),
 	])
 })
 const proj2 = new DataProject('Proj2')
